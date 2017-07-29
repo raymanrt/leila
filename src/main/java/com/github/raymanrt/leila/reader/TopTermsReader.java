@@ -1,15 +1,30 @@
+/*
+ * Copyright 2017 Riccardo Tasso
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.github.raymanrt.leila.reader;
 
-import static java.lang.String.format;
-import static org.apache.lucene.misc.HighFreqTerms.getHighFreqTerms;
-
-import java.util.Arrays;
-
+import com.github.raymanrt.leila.option.TopTermsOptions;
 import org.apache.lucene.misc.HighFreqTerms;
 import org.apache.lucene.misc.TermStats;
 import org.apache.lucene.search.IndexSearcher;
 
-import com.github.raymanrt.leila.option.TopTermsOptions;
+import java.util.Arrays;
+
+import static java.lang.String.format;
+import static org.apache.lucene.misc.HighFreqTerms.getHighFreqTerms;
 
 public class TopTermsReader {
 
