@@ -1,0 +1,15 @@
+syntax: glob
+.idea/
+.settings/
+.classpath
+.hgrc
+.project
+.cache
+*.iml
+bin/
+data/
+logs/
+log/
+target/
+overlays/
+release.properties
