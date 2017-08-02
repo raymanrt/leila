@@ -74,14 +74,17 @@ public class LuceneDocIterator implements Iterator<Object> {
 		final Query parsedQuery = queryParser.parse(query);
 		
 		// ORDER BY
-		final Sort sort = new Sort(new SortField(sortByField, STRING)); // TODO: sort per field di tipo non string, sort per multifield, ...
+		final Sort sort = sortByField.isEmpty() ?
+				new Sort(new SortField(sortByField, STRING)) :
+				Sort.INDEXORDER; // TODO: sort per field di tipo non string, sort per multifield, ...
 		
 		// GROUP BY / HAVING ?
 		
 		// LIMIT
 		final int maxDoc = searcher.getIndexReader().maxDoc();
 		this.limit = limit < 0 ? maxDoc : Integer.min(limit, maxDoc);
-		
+
+		// TODO: print query time in ms
 		search = searcher.search(parsedQuery, this.limit, sort);
 		
 	}

@@ -74,7 +74,7 @@ public class DocumentsReaderOptions {
 	public static Option sortByOption() {
 		return Option.builder("o")
 				.desc("field for sorting (default '')")
-				.longOpt("sortBy")
+				.longOpt("orderBy")
 				.hasArg()
 		.build();
 	}
