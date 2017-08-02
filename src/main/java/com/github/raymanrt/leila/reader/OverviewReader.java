@@ -114,7 +114,7 @@ public class OverviewReader {
 		final Collection<String> fields = getFieldsFromIndex(searcher, verbose); // TODO: sort by field or by count?
 		if(verbose) {
 			System.out.println(format(":: %s fields:", fields.size()));
-			System.out.print(StringUtils.join(fields, "\n"));
+			System.out.println(StringUtils.join(fields, "\n"));
 		} else {
 			System.out.println(format(":: %s fields: %s", fields.size(), fields));
 		}
