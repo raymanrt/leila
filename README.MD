@@ -88,3 +88,26 @@ as parameter.
 
 To select only a subset of fields the `-f` option could be used, to ignore them the option is `-i`. Both of those options
 require a comma separated list of field names. The `-f` and `-i` options are mutually exclusive.
+
+Documents are formatted with the default toString method of [Document](http://lucene.apache.org/core/4_1_0/core/org/apache/lucene/document/Document.html#toString()) object.
+
+Token streams
+-------------
+
+In lucene a field could also be associated with a token stream, which is a sequence of tokens.
+
+With the `-s` option, and giving a comma separated list of field names, a line for each field will be printed to the
+output, containing an ordered list of tokens with the relative span of text covered in the original text. The format is
+as follows:
+```
+java -jar target/leila.jar target/demo-index -s content -l 1
+:: 1 token streams to select: content
+:: query: *:*
+:: sortBy:
+:: limit: 1
+:: listing documents
+:: total documents found: 100
+Document<stored<id:0> stored,indexed,tokenized,omitNorms,indexOptions=DOCS_ONLY<content:random 61a7a3e5-8dc3-4e22-91e6-2fffe2529815>>
+token stream [content]: [random <0-6>, 61a7a3e5-8dc3-4e22-91e6-2fffe2529815 <7-43>]
+```
+This option works executing a query as described in the previous section.

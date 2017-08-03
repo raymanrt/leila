@@ -41,8 +41,8 @@ public class DemoIndexBuilderTest {
 
     private static final int MAX_DOCS = 100;
 
-    public static final String MVN_TARGET = "target";
-    public static final String DEMO_INDEX = "demo-index";
+    private static final String MVN_TARGET = "target";
+    private static final String DEMO_INDEX = "demo-index";
 
     @Before
     public void cleanUp() throws IOException {
@@ -73,7 +73,7 @@ public class DemoIndexBuilderTest {
         Document doc = new Document();
 
         doc.add(new IntField("id", id, Field.Store.YES));
-        doc.add(new StringField("content", UUID.randomUUID().toString(), Field.Store.YES));
+        doc.add(new StringField("content", "random " + UUID.randomUUID().toString(), Field.Store.YES));
 
         return doc;
     }
