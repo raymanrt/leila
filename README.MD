@@ -16,6 +16,11 @@ on the index, please use this software at your own risk.
 Leila is based on lucene 4.10.4. Future versions could be available also with more recent dependencies, depending on the
 user needs.
 
+This software is open-source, released under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0),
+and made without any commercial intent. Please feel free to contribute, especially if you find *leila* usefull and
+discover some bug or missing feature.
+The non-exhaustive feature request list is at the bottom of this page.
+
 Build from source
 -----------------
 
@@ -136,3 +141,4 @@ issued. Pull requests and suggestions are wellcome. That said there is a list of
 * aggregate functions (sum, max, min, avg, ...)
 * multi-field sort
 * print query execution time in ms
+* support for other lucene versions
