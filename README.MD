@@ -111,3 +111,28 @@ Document<stored<id:0> stored,indexed,tokenized,omitNorms,indexOptions=DOCS_ONLY<
 token stream [content]: [random <0-6>, 61a7a3e5-8dc3-4e22-91e6-2fffe2529815 <7-43>]
 ```
 This option works executing a query as described in the previous section.
+
+Version History
+---------------
+
+Version 0.0.1:
+* index overview
+* terms list
+* search documents
+* token stream
+* documentation
+
+Next releases
+-------------
+
+This project is developed in my spare time, there are no scheduled releases. I'll try to fix bugs and resolve opened
+issued. Pull requests and suggestions are wellcome. That said there is a list of feature desired for the next releases:
+* overview mode made optional
+* more unit test coverage
+* support for querying correctly also other field types (i.e. numeric)
+* support for custom query parser
+* support for custom query analyzer
+* function to serialize documents in other formats (csv, json, ...), maybe via plugins?
+* aggregate functions (sum, max, min, avg, ...)
+* multi-field sort
+* print query execution time in ms
