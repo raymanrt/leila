@@ -53,8 +53,10 @@ public class LuceneDocIterator implements Iterator<Object> {
 	private final IndexSearcher searcher;
 	
 	private final TopFieldDocs search;
+
+	private final long queryTimeInMs;
+
 	private int current = 0;
-	private final int limit;
 	private int currentDoc;
 
 	public LuceneDocIterator(final IndexSearcher searcher,
@@ -82,11 +84,13 @@ public class LuceneDocIterator implements Iterator<Object> {
 		
 		// LIMIT
 		final int maxDoc = searcher.getIndexReader().maxDoc();
-		this.limit = limit < 0 ? maxDoc : Integer.min(limit, maxDoc);
+		final int currentLimit = limit < 0 ? maxDoc : Integer.min(limit, maxDoc);
 
-		// TODO: print query time in ms
-		search = searcher.search(parsedQuery, this.limit, sort);
-		
+		long t0 = System.currentTimeMillis();
+		search = searcher.search(parsedQuery, currentLimit, sort);
+		long t1 = System.currentTimeMillis();
+
+		queryTimeInMs = t1 - t0;
 	}
 
 	private Set<String> fieldsToLoad() throws IOException {
@@ -152,6 +156,10 @@ public class LuceneDocIterator implements Iterator<Object> {
 		}
 		
 		return tokens;
+	}
+
+	public long getQueryTimeInMs() {
+		return queryTimeInMs;
 	}
 
 }

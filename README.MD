@@ -141,5 +141,4 @@ issued. Pull requests and suggestions are wellcome. That said there is a list of
 * function to serialize documents in other formats (csv, json, ...), maybe via plugins?
 * aggregate functions (sum, max, min, avg, ...)
 * multi-field sort
-* print query execution time in ms
 * support for other lucene versions

@@ -57,6 +57,8 @@ public class DocumentsReader {
 		final LuceneDocIterator docs = new LuceneDocIterator(searcher, query, sortByField, limit, fields, ignores);
 
 		System.out.println(":: total documents found: " + docs.getTotalHits());
+
+		System.out.println(format(":: query time: %dms", docs.getQueryTimeInMs()));
 		
 		while(docs.hasNext()) {
 			System.out.println(formatter.format(docs.next()));
