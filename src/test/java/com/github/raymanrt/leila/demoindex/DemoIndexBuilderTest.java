@@ -46,8 +46,15 @@ public class DemoIndexBuilderTest {
 
     @Before
     public void cleanUp() throws IOException {
-        Files.walk(Paths.get(MVN_TARGET)
-                .resolve(DEMO_INDEX))
+
+        Path path = Paths.get(MVN_TARGET)
+                .resolve(DEMO_INDEX);
+
+        if(!path.toFile().exists()) {
+            return;
+        }
+
+        Files.walk(path)
                 .map(Path::toFile)
                 .forEach(File::delete)
         ;
