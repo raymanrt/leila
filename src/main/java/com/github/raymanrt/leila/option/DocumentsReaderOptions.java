@@ -54,10 +54,10 @@ public class DocumentsReaderOptions {
 		.build();
 	}
 	
-	public static Option tokenStreamFieldsOption() {
-		return Option.builder("s")
-				.desc("comma separated list of fields to show in token stream")
-				.longOpt("stream")
+	public static Option termVectorFieldsOption() {
+		return Option.builder("v")
+				.desc("comma separated list of fields to show as term vector")
+				.longOpt("vector")
 				.hasArgs()
 				.valueSeparator(',')
 		.build();
@@ -72,9 +72,9 @@ public class DocumentsReaderOptions {
 	}
 
 	public static Option sortByOption() {
-		return Option.builder("o")
-				.desc("field for sorting (default '')")
-				.longOpt("orderBy")
+		return Option.builder("s")
+				.desc("field for sorting (default INDEX ORDER)")
+				.longOpt("sortBy")
 				.hasArg()
 		.build();
 	}
@@ -95,7 +95,7 @@ public class DocumentsReaderOptions {
 	}
 
 	public String getSortByField() {
-		final String sortBy = cli.getOptionValue('o', "");
+		final String sortBy = cli.getOptionValue('s', "");
 		System.out.println(format(":: sortBy: %s", sortBy));
 		return sortBy;
 	}
@@ -130,9 +130,9 @@ public class DocumentsReaderOptions {
 
 	public String[] getTokenStreamFields() {
 		String[] fields = new String[] {};
-		if(cli.hasOption('s')) {
-			fields = cli.getOptionValues('s');
-			System.out.println(format(":: %d token streams to select: %s", fields.length, StringUtils.join(fields, ", ")));
+		if(cli.hasOption('v')) {
+			fields = cli.getOptionValues('v');
+			System.out.println(format(":: %d term vector(s) to select: %s", fields.length, StringUtils.join(fields, ", ")));
 		}
 		return fields;
 	}

@@ -38,8 +38,10 @@ public class Main {
 			
 			searcher = Util.getSearcher(cliParser.getIndex());
 
-			final OverviewReader overview = new OverviewReader(searcher);
-			overview.read();
+			if(cliParser.hasOverviewOption()) {
+				final OverviewReader overview = new OverviewReader(searcher);
+				overview.read();
+			}
 			
 			final TopTermsReader topTerms = new TopTermsReader(searcher, cliParser.getTopTerrmsOptions());
 			topTerms.read();

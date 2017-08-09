@@ -22,6 +22,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -31,14 +32,13 @@ public class CliParser {
 			// TODO: verbose
 			
 			// query
-			.addOption(DocumentsReaderOptions.fieldsOption()) // TODO: -s
+			.addOption(overviewOption())
+			.addOption(DocumentsReaderOptions.fieldsOption())
 			.addOption(DocumentsReaderOptions.ignoreOption())
-			.addOption(DocumentsReaderOptions.tokenStreamFieldsOption())
+			.addOption(DocumentsReaderOptions.termVectorFieldsOption())
 			.addOption(DocumentsReaderOptions.queryOption())
 			.addOption(DocumentsReaderOptions.sortByOption())
 			.addOption(DocumentsReaderOptions.limitOption())
-			
-			// TODO: index metadata -m?
 			
 			// TODO: list fields -f (with freq?)
 			
@@ -83,5 +83,17 @@ public class CliParser {
 
 	public DocumentsReaderOptions getDocumentsReaderOptions() {
 		return this.documentsReaderOptions;
+	}
+
+	public static Option overviewOption() {
+		return Option.builder("o")
+				.desc("enables overview mode")
+				.longOpt("overview")
+				.hasArg(false)
+				.build();
+	}
+
+	public boolean hasOverviewOption() {
+		return cli.hasOption('o');
 	}
 }

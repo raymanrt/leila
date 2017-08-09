@@ -41,6 +41,8 @@ The build process will also create a small index which will be used as reference
 Index overview
 --------------
 
+The index overview can be activated with the `-o` option.
+
 The index overview has the following format:
 ```
 :: 2 fields:
@@ -88,7 +90,7 @@ It's not possible using custom query parser or analyzers, but it could be one of
 By default a maximum of 20 documents is returned, to change this limit the `-l` option could be used passing a number as
 parameter.
 
-By default documents are sorted by insertion order, to use a custom field the `-o` option could be used passing its name
+By default documents are sorted by insertion order, to use a custom field the `-s` option could be used passing its name
 as parameter.
 
 To select only a subset of fields the `-f` option could be used, to ignore them the option is `-i`. Both of those options
@@ -96,16 +98,16 @@ require a comma separated list of field names. The `-f` and `-i` options are mut
 
 Documents are formatted with the default toString method of [Document](http://lucene.apache.org/core/4_1_0/core/org/apache/lucene/document/Document.html#toString()) object.
 
-Token streams
+Term vector
 -------------
 
-In lucene a field could also be associated with a token stream, which is a sequence of tokens.
+In lucene a field could also be associated with a term vector, which is a sequence of tokens.
 
-With the `-s` option, and giving a comma separated list of field names, a line for each field will be printed to the
+With the `-v` option, and giving a comma separated list of field names, a line for each field will be printed to the
 output, containing an ordered list of tokens with the relative span of text covered in the original text. The format is
 as follows:
 ```
-java -jar target/leila.jar target/demo-index -s content -l 1
+java -jar target/leila.jar target/demo-index -v content -l 1
 :: 1 token streams to select: content
 :: query: *:*
 :: sortBy:
