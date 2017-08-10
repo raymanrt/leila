@@ -25,6 +25,12 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.String.format;
 
 public class CliParser {
 	final static CommandLineParser CLI_PARSER = new DefaultParser();
@@ -44,6 +50,8 @@ public class CliParser {
 			
 			// TODO: list (top) terms -t (by field, how many)
 			.addOption(TopTermsOptions.topTermOption())
+
+			.addOption(datatypesOption())
 	;
 	final static HelpFormatter formatter = new HelpFormatter();
 	
@@ -96,4 +104,32 @@ public class CliParser {
 	public boolean hasOverviewOption() {
 		return cli.hasOption('o');
 	}
+
+
+
+	public static Option datatypesOption() {
+		return Option.builder("d")
+				.desc("comma separated list of fields with their explicit datatype (e.g. id:int)")
+				.longOpt("datatypes")
+				.hasArgs()
+				.valueSeparator(',')
+				.build();
+	}
+
+    public Map<String, String> getFieldToDatatype() {
+		final Map<String, String> fieldsToDatatypes = new HashMap<>();
+		if(cli.hasOption('d')) {
+			String[] fieldAndDatatypes = cli.getOptionValues('d');
+
+			for(String fieldAndDatatype : fieldAndDatatypes) {
+				String[] tokens = fieldAndDatatype.trim().split(":");
+				String field = tokens[0].trim();
+				String datatype = tokens[1].trim();
+				fieldsToDatatypes.put(field, datatype);
+			}
+
+			System.out.println(format(":: datatype infos: %s", fieldsToDatatypes));
+		}
+		return fieldsToDatatypes;
+    }
 }

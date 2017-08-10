@@ -24,6 +24,7 @@ import org.apache.lucene.search.IndexSearcher;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 
@@ -31,10 +32,12 @@ public class DocumentsReader {
 
 	private final IndexSearcher searcher;
 	private final DocumentsReaderOptions options;
+	private final Map<String, String> fieldToDatatype;
 
-	public DocumentsReader(final IndexSearcher searcher, final DocumentsReaderOptions documentsReaderOptions) {
+	public DocumentsReader(final IndexSearcher searcher, final DocumentsReaderOptions documentsReaderOptions, final Map<String, String> fieldToDatatype) {
 		this.searcher = searcher;
 		this.options = documentsReaderOptions;
+		this.fieldToDatatype = fieldToDatatype;
 	}
 
 	public void read() throws IOException, ParseException {
@@ -54,7 +57,7 @@ public class DocumentsReader {
 		}
 
 		System.out.println(format(":: listing documents"));
-		final LuceneDocIterator docs = new LuceneDocIterator(searcher, query, sortByField, limit, fields, ignores);
+		final LuceneDocIterator docs = new LuceneDocIterator(searcher, query, sortByField, limit, fields, ignores, fieldToDatatype);
 
 		System.out.println(":: total documents found: " + docs.getTotalHits());
 

@@ -46,7 +46,8 @@ public class Main {
 			final TopTermsReader topTerms = new TopTermsReader(searcher, cliParser.getTopTerrmsOptions());
 			topTerms.read();
 			
-			final DocumentsReader documents = new DocumentsReader(searcher, cliParser.getDocumentsReaderOptions());
+			final DocumentsReader documents = new DocumentsReader(searcher, cliParser.getDocumentsReaderOptions(),
+					cliParser.getFieldToDatatype());
 			documents.read();
 			
 			

@@ -98,6 +98,32 @@ require a comma separated list of field names. The `-f` and `-i` options are mut
 
 Documents are formatted with the default toString method of [Document](http://lucene.apache.org/core/4_1_0/core/org/apache/lucene/document/Document.html#toString()) object.
 
+Datatype declaration
+--------------------
+
+Lucene doesn't store in the index the datatype for its fields. The `-d` option can be used to give leila the information
+of the datatype for each field. Those informations are required if the input query contains clauses for a field which is
+not a string.
+
+A comma separated list of fields, with their own datatype can be provided. Supported datatypes are:
+* `integer` (shorcut `int`)
+
+For example, to declare and query the id field as integer:
+```
+java -jar target/leila.jar target/demo-index -d id:int -q 'id:[90 TO *]' -l 2
+:: datatype infos: {id=int}
+:: query: id:[90 TO *]
+:: sortBy:
+:: limit: 2
+:: listing documents
+:: total documents found: 10
+:: query time: 34ms
+Document<stored<id:90> stored,indexed,tokenized<content:random 73573e5d-5b68-43fd-9978-15654f2711b9> stored<double:4.9> stored<float:0.9>>
+Document<stored<id:91> stored,indexed,tokenized<content:11303088-db62-4ff4-94bf-5c14ee7e9fc7> stored<double:4.91> stored<float:0.91>>
+```
+
+<!-- TODO: top terms can be formatted as int? -->
+
 Term vector
 -------------
 
@@ -141,4 +167,5 @@ issued. Pull requests and suggestions are wellcome. That said there is a list of
 * function to serialize documents in other formats (csv, json, ...), maybe via plugins?
 * aggregate functions (sum, max, min, avg, ...)
 * multi-field sort
+* descending sort
 * support for other lucene versions

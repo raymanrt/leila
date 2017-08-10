@@ -16,6 +16,7 @@
 
 package com.github.raymanrt.leila;
 
+import com.github.raymanrt.leila.queryparser.LeilaQueryParser;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -33,8 +34,10 @@ import org.apache.lucene.search.highlight.TokenSources;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -60,8 +63,8 @@ public class LuceneDocIterator implements Iterator<Object> {
 	private int currentDoc;
 
 	public LuceneDocIterator(final IndexSearcher searcher,
-			final String query, final String sortByField, final int limit, 
-			final String[] fieldsToSelect, final String[] fieldsToIgnore) throws IOException, ParseException {
+							 final String query, final String sortByField, final int limit,
+							 final String[] fieldsToSelect, final String[] fieldsToIgnore, final Map<String, String> fieldToDatatype) throws IOException, ParseException {
 		
 		// SELECT
 		this.fieldsToSelect = fieldsToSelect;
@@ -72,9 +75,10 @@ public class LuceneDocIterator implements Iterator<Object> {
 		fieldsToLoad = fieldsToLoad();
 		
 		// WHERE
-		final QueryParser queryParser = new QueryParser("", new WhitespaceAnalyzer()); // TODO: analyzer custom
+//		final QueryParser queryParser = new QueryParser("", new WhitespaceAnalyzer()); // TODO: analyzer custom
+		final QueryParser queryParser = new LeilaQueryParser("", new WhitespaceAnalyzer(), fieldToDatatype);
 		final Query parsedQuery = queryParser.parse(query);
-		
+
 		// ORDER BY
 		final Sort sort = sortByField.isEmpty() ?
 				new Sort(new SortField(sortByField, STRING)) :

@@ -18,9 +18,14 @@ package com.github.raymanrt.leila.demoindex;
 
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.DoubleField;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
@@ -43,6 +48,10 @@ public class DemoIndexBuilderTest {
 
     private static final String MVN_TARGET = "target";
     private static final String DEMO_INDEX = "demo-index";
+
+    private static final double BASE_DOUBLE = 4.0;
+
+    private static final float BASE_FLOAT = 0.0f;
 
     @Before
     public void cleanUp() throws IOException {
@@ -80,9 +89,27 @@ public class DemoIndexBuilderTest {
         Document doc = new Document();
 
         doc.add(new IntField("id", id, Field.Store.YES));
-        doc.add(new StringField("content", "random " + UUID.randomUUID().toString(), Field.Store.YES));
+
+        String contentValue = id % 2 == 0 ?
+                "random " + UUID.randomUUID().toString() :
+                UUID.randomUUID().toString();
+        doc.add(new TextField("content", contentValue, Field.Store.YES));
+
+        doc.add(new NumericDocValuesField("longid", id * 10));
+
+        doc.add(new DoubleField("double", toDouble(id), Field.Store.YES));
+
+        doc.add(new FloatField("float", toFloat(id), Field.Store.YES));
 
         return doc;
+    }
+
+    private double toDouble(final int id) {
+        return BASE_DOUBLE + ((double) id / 100);
+    }
+
+    private float toFloat(final int id) {
+        return BASE_FLOAT + ((float) id / 100);
     }
 
 }
