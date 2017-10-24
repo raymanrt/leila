@@ -17,7 +17,7 @@
 package com.github.raymanrt.leila.reader;
 
 import com.github.raymanrt.leila.LuceneDocIterator;
-import com.github.raymanrt.leila.formatter.DocumentFormatter;
+import com.github.raymanrt.leila.formatter.DocumentFormatterWrapper;
 import com.github.raymanrt.leila.option.DocumentsReaderOptions;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
@@ -50,28 +50,29 @@ public class DocumentsReader {
 		final String sortByField = options.getSortByField();
 		final int limit = options.getLimit();
 		
-		final DocumentFormatter formatter = options.getFormatter();
-		
-		if(limit < 1) {
-			return;
-		}
+		try(final DocumentFormatterWrapper formatter = options.getFormatter()) {
+			if(limit < 1) {
+				return;
+			}
 
-		System.out.println(format(":: listing documents"));
-		final LuceneDocIterator docs = new LuceneDocIterator(searcher, query, sortByField, limit, fields, ignores, fieldToDatatype);
+			System.out.println(format(":: listing documents"));
+			final LuceneDocIterator docs = new LuceneDocIterator(searcher, query, sortByField, limit, fields, ignores, fieldToDatatype);
 
-		System.out.println(":: total documents found: " + docs.getTotalHits());
+			System.out.println(":: total documents found: " + docs.getTotalHits());
 
-		System.out.println(format(":: query time: %dms", docs.getQueryTimeInMs()));
-		
-		while(docs.hasNext()) {
-			System.out.println(formatter.format(docs.next()));
-			for(final String tokenStreamField : tokenStreamFields) {
-				final List<Object> tokenStream = docs.getTokenStream(tokenStreamField);
-				if(!tokenStream.isEmpty()) {
-					System.out.println(format("token stream [%s]: %s", tokenStreamField, tokenStream));
+			System.out.println(format(":: query time: %dms", docs.getQueryTimeInMs()));
+
+			while(docs.hasNext()) {
+				System.out.println(formatter.format(docs.next()));
+				for(final String tokenStreamField : tokenStreamFields) {
+					final List<Object> tokenStream = docs.getTokenStream(tokenStreamField);
+					if(!tokenStream.isEmpty()) {
+						System.out.println(format("token stream [%s]: %s", tokenStreamField, tokenStream));
+					}
 				}
 			}
 		}
+
 	}
 
 }

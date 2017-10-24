@@ -18,11 +18,22 @@ package com.github.raymanrt.leila.formatter;
 
 import org.apache.lucene.document.Document;
 
-public class SimpleDocumentFormatter implements DocumentFormatter {
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Arrays;
 
-	@Override
-	public String format(final Document document) {
+public class SimpleDocumentFormatter implements Closeable {
+
+	public SimpleDocumentFormatter(String ... args) {
+		System.out.println(":: SimpleDocumentFormatter invoked with params: " + Arrays.asList(args));
+	}
+
+	public static String format(final Document document) {
 		return document.toString();
 	}
 
+	@Override
+	public void close() throws IOException {
+		System.out.println("closing SimpleDocumentFormatter");
+	}
 }

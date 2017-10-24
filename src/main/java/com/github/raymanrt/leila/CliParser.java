@@ -45,6 +45,7 @@ public class CliParser {
 			.addOption(DocumentsReaderOptions.queryOption())
 			.addOption(DocumentsReaderOptions.sortByOption())
 			.addOption(DocumentsReaderOptions.limitOption())
+			.addOption(DocumentsReaderOptions.pluginOption())
 			
 			// TODO: list fields -f (with freq?)
 			

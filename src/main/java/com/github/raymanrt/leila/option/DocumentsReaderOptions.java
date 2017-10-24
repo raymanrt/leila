@@ -16,8 +16,7 @@
 
 package com.github.raymanrt.leila.option;
 
-import com.github.raymanrt.leila.formatter.DocumentFormatter;
-import com.github.raymanrt.leila.formatter.SimpleDocumentFormatter;
+import com.github.raymanrt.leila.formatter.DocumentFormatterWrapper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
@@ -32,17 +31,27 @@ public class DocumentsReaderOptions {
 		this.cli = cli;
 	}
 	
-	public DocumentFormatter getFormatter() {
-		return new SimpleDocumentFormatter();
+	public DocumentFormatterWrapper getFormatter() {
+		String[] pluginAndParams = cli.getOptionValues('p');
+		return new DocumentFormatterWrapper(pluginAndParams);
 	}
-	
+
 	public static Option fieldsOption() {
 		return Option.builder("f")
 				.desc("comma separated list of fields to show in output")
 				.longOpt("fields")
 				.hasArgs()
 				.valueSeparator(',')
-		.build();
+				.build();
+	}
+
+	public static Option pluginOption() {
+		return Option.builder("p")
+				.desc("class parameters")
+				.longOpt("plugin")
+				.hasArgs()
+				.valueSeparator(' ')
+				.build();
 	}
 
 	public static Option ignoreOption() {
