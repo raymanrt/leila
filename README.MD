@@ -125,7 +125,7 @@ Document<stored<id:91> stored,indexed,tokenized<content:11303088-db62-4ff4-94bf-
 <!-- TODO: top terms can be formatted as int? -->
 
 Term vector
--------------
+-----------
 
 In lucene a field could also be associated with a term vector, which is a sequence of tokens.
 
@@ -145,8 +145,51 @@ token stream [content]: [random <0-6>, 61a7a3e5-8dc3-4e22-91e6-2fffe2529815 <7-4
 ```
 This option works executing a query as described in the previous section.
 
+Output plugins
+--------------
+
+Sometimes it is useful having some custom output format to present the query results.
+
+It would be impossible to cope with all the requirements and for this purpose *leila* implements a plugin based engine.
+
+To create a output plugin it is sufficient define a Java class with one public method whith any name, receiving one
+parameter of type `org.apache.lucene.document.Document`. The implementation of this method should always return a String.
+
+Usually the String represents the document in some other custom format and will be printed by *leila* to standard
+output.
+
+If the String is empty the document won't be printed. This is useful if the custom plugin doesn't need to print to
+standard output (e.g. it should write to some file or some other kind of output).
+
+The Java class implementing a plugin could also have one builder with an argument which could be:
+* a String
+* a String array
+
+This is the only way supported for passing arguments to a plugin (i.e. an array of strings).
+
+If the Java class implements the `java.io.Closeable` interface, the `close` method will always be invoked at the
+execution end. This can be useful in cases where the plugin should release some resources acquired during
+the execution.
+
+The use of a plugin is fired passing the full name of the Java class which contains the output logic,
+with the `p` option:
+```
+java -cp 'target/leila.jar:../leila-json/target/leila-json.jar' com.github.raymanrt.leila.Main \
+    target/demo-index \
+    -p com.github.raymanrt.leila.json.JsonFormatter pprint
+```
+
+Please go to [leila-json](https://github.com/raymanrt/leila-json) for more documentation and for a reference
+implementation.
+
 Version History
 ---------------
+
+Version 0.2.0
+* support for output plugins (e.g. document formatting)
+
+Version 0.1.0
+* support for querying correctly also other field types (i.e. numeric)
 
 Version 0.0.1:
 * index overview
@@ -161,10 +204,8 @@ Next releases
 This project is developed in my spare time, there are no scheduled releases. I'll try to fix bugs and resolve opened
 issued. Pull requests and suggestions are wellcome. That said there is a list of feature desired for the next releases:
 * more unit test coverage
-* support for querying correctly also other field types (i.e. numeric)
 * support for custom query parser
 * support for custom query analyzer
-* function to serialize documents in other formats (csv, json, ...), maybe via plugins?
 * aggregate functions (sum, max, min, avg, ...)
 * multi-field sort
 * descending sort
