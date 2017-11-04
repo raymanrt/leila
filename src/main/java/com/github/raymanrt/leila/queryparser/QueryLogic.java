@@ -66,4 +66,82 @@ public interface QueryLogic {
 
         }
     };
+
+    public static QueryLogic FLOAT = new QueryLogic() {
+        @Override
+        public Query newRangeQuery(final String field, final String part1, final String part2, final boolean startInclusive, final boolean endInclusive) {
+            Float num1 = null;
+            try {
+                num1 = Float.parseFloat(part1);
+            } catch(NumberFormatException ex) {
+
+            }
+            Float num2 = null;
+            try {
+                num2 = Float.parseFloat(part2);
+            } catch(NumberFormatException ex) {
+
+            }
+            return NumericRangeQuery.newFloatRange(field, num1, num2, startInclusive, endInclusive);
+        }
+
+        @Override
+        public Query newTermQuery(final Term term) {
+            BytesRefBuilder byteRefBuilder = new BytesRefBuilder();
+            NumericUtils.intToPrefixCoded(NumericUtils.floatToSortableInt(Float.parseFloat(term.text())), 0, byteRefBuilder);
+            return new TermQuery(new Term(term.field(), byteRefBuilder.get()));
+        }
+    };
+
+    public static QueryLogic LONG = new QueryLogic() {
+        @Override
+        public Query newRangeQuery(final String field, final String part1, final String part2, final boolean startInclusive, final boolean endInclusive) {
+            Long num1 = null;
+            try {
+                num1 = Long.parseLong(part1);
+            } catch(NumberFormatException ex) {
+
+            }
+            Long num2 = null;
+            try {
+                num2 = Long.parseLong(part2);
+            } catch(NumberFormatException ex) {
+
+            }
+            return NumericRangeQuery.newLongRange(field, num1, num2, startInclusive, endInclusive);
+        }
+
+        @Override
+        public Query newTermQuery(final Term term) {
+            BytesRefBuilder byteRefBuilder = new BytesRefBuilder();
+            NumericUtils.longToPrefixCoded(Long.parseLong(term.text()), 0, byteRefBuilder);
+            return new TermQuery(new Term(term.field(), byteRefBuilder.get()));
+        }
+    };
+
+    public static QueryLogic DOUBLE = new QueryLogic() {
+        @Override
+        public Query newRangeQuery(final String field, final String part1, final String part2, final boolean startInclusive, final boolean endInclusive) {
+            Double num1 = null;
+            try {
+                num1 = Double.parseDouble(part1);
+            } catch(NumberFormatException ex) {
+
+            }
+            Double num2 = null;
+            try {
+                num2 = Double.parseDouble(part2);
+            } catch(NumberFormatException ex) {
+
+            }
+            return NumericRangeQuery.newDoubleRange(field, num1, num2, startInclusive, endInclusive);
+        }
+
+        @Override
+        public Query newTermQuery(final Term term) {
+            BytesRefBuilder byteRefBuilder = new BytesRefBuilder();
+            NumericUtils.longToPrefixCoded(NumericUtils.doubleToSortableLong(Double.parseDouble(term.text())), 0, byteRefBuilder);
+            return new TermQuery(new Term(term.field(), byteRefBuilder.get()));
+        }
+    };
 }

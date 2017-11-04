@@ -24,7 +24,6 @@ import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.NumericDocValuesField;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -101,7 +100,13 @@ public class DemoIndexBuilderTest {
 
         doc.add(new FloatField("float", toFloat(id), Field.Store.YES));
 
+        doc.add(new LongField("long", toLong(id), Field.Store.YES));
+
         return doc;
+    }
+
+    private long toLong(final int id) {
+        return 100L + id;
     }
 
     private double toDouble(final int id) {

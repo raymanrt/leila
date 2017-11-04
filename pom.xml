@@ -22,7 +22,7 @@
 
     <groupId>com.github.raymanrt</groupId>
     <artifactId>leila</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

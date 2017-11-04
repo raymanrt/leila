@@ -107,6 +107,9 @@ not a string.
 
 A comma separated list of fields, with their own datatype can be provided. Supported datatypes are:
 * `integer` (shorcut `int`)
+* `float`
+* `long`
+* `double`
 
 For example, to declare and query the id field as integer:
 ```
@@ -185,11 +188,14 @@ implementation.
 Version History
 ---------------
 
+Version 0.3.0
+* added querying for more field types: double, float, long
+
 Version 0.2.0
 * support for output plugins (e.g. document formatting)
 
 Version 0.1.0
-* support for querying correctly also other field types (i.e. numeric)
+* support for querying correctly also other field types (i.e. numeric): int, integer
 
 Version 0.0.1:
 * index overview

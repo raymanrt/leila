@@ -31,6 +31,11 @@ public class LeilaQueryParser extends QueryParser {
     static {
         datatypeToQueryParser.put("int", QueryLogic.INTEGER);
         datatypeToQueryParser.put("integer", QueryLogic.INTEGER);
+
+        datatypeToQueryParser.put("float", QueryLogic.FLOAT);
+
+        datatypeToQueryParser.put("long", QueryLogic.LONG);
+        datatypeToQueryParser.put("double", QueryLogic.DOUBLE);
     }
 
     private final Map<String, String> fieldNameToDatatype;
