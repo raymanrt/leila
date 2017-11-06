@@ -125,6 +125,46 @@ Document<stored<id:90> stored,indexed,tokenized<content:random 73573e5d-5b68-43f
 Document<stored<id:91> stored,indexed,tokenized<content:11303088-db62-4ff4-94bf-5c14ee7e9fc7> stored<double:4.91> stored<float:0.91>>
 ```
 
+Sorting results
+---------------
+
+As said in the previous paragraph, the `-s` option can be used to specify the sorting field.
+
+More sorting preferences could be specified with this option, which are the datatype for comparing fields (INT, FLOAT,
+DOUBLE, LONG) or the direction of sort, which can be: ascending or descending (reverse).
+
+For example to sort by a `long` field in reverse order use:
+```
+java -jar target/leila.jar target/demo-index -s long:LONG:DESC -l 2
+:: query: *:*
+:: sortBy: <long: "long">!
+:: limit: 20
+:: listing documents
+:: total documents found: 100
+:: query time: 27ms
+Document<stored<id:99> stored,indexed,tokenized<content:475db422-32ef-434e-a4c1-fd8eeab7ce57> stored<double:4.99> stored<float:0.99> stored<long:199>>
+Document<stored<id:98> stored,indexed,tokenized<content:random 85772b72-47f2-4fc8-bcf9-441812d8b723> stored<double:4.98> stored<float:0.98> stored<long:198>>
+```
+
+Default sorting type is String, so be ware that without specifying a type, documents will be sorted in lexicographically
+ order:
+```
+➜  leila git:(master) ✗ java -jar target/leila.jar target/demo-index -s float:REVERSE -f float
+:: 1 fields to select: float
+:: query: *:*
+:: sortBy: <string: "float">!
+:: limit: 20
+:: listing documents
+:: total documents found: 100
+:: query time: 27ms
+Document<stored<float:0.0>>
+Document<stored<float:0.99>>
+[...]
+Document<stored<float:0.91>>
+Document<stored<float:0.9>>
+Document<stored<float:0.89>>
+```
+
 <!-- TODO: top terms can be formatted as int? -->
 
 Term vector
@@ -188,6 +228,9 @@ implementation.
 Version History
 ---------------
 
+Version 0.4.0
+* added numeric sorting and reversed sorting
+
 Version 0.3.0
 * added querying for more field types: double, float, long
 
@@ -214,5 +257,4 @@ issued. Pull requests and suggestions are wellcome. That said there is a list of
 * support for custom query analyzer
 * aggregate functions (sum, max, min, avg, ...)
 * multi-field sort
-* descending sort
 * support for other lucene versions

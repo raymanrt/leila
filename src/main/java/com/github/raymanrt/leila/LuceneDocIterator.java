@@ -27,7 +27,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.search.highlight.TokenSources;
 
@@ -42,7 +41,6 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.lucene.search.SortField.Type.STRING;
 
 public class LuceneDocIterator implements Iterator<Object> {
 
@@ -62,7 +60,8 @@ public class LuceneDocIterator implements Iterator<Object> {
 	private int currentDoc;
 
 	public LuceneDocIterator(final IndexSearcher searcher,
-							 final String query, final String sortByField, final int limit,
+							 final String query,
+							 final Sort sort, final int limit,
 							 final String[] fieldsToSelect, final String[] fieldsToIgnore, final Map<String, String> fieldToDatatype) throws IOException, ParseException {
 		
 		// SELECT
@@ -79,10 +78,10 @@ public class LuceneDocIterator implements Iterator<Object> {
 		final Query parsedQuery = queryParser.parse(query);
 
 		// ORDER BY
-		final Sort sort = sortByField.isEmpty() ?
-				new Sort(new SortField(sortByField, STRING)) :
-				Sort.INDEXORDER; // TODO: sort per field di tipo non string, sort per multifield, ...
-		
+//		final Sort sort = sortByField.isEmpty() ?
+//				new Sort(new SortField(sortByField.fieldname(), sortByField.type(), sortByField.reverse())) :
+//				Sort.INDEXORDER; // TODO: sort per field di tipo non string, sort per multifield, ...
+
 		// GROUP BY / HAVING ?
 		
 		// LIMIT

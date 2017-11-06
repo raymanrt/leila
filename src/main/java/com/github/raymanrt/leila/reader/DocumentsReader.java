@@ -21,6 +21,7 @@ import com.github.raymanrt.leila.formatter.DocumentFormatterWrapper;
 import com.github.raymanrt.leila.option.DocumentsReaderOptions;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Sort;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,7 +48,7 @@ public class DocumentsReader {
 		final String[] tokenStreamFields = options.getTokenStreamFields();
 
 		final String query = options.getQuery();
-		final String sortByField = options.getSortByField();
+		final Sort sortByField = options.getSortByField();
 		final int limit = options.getLimit();
 		
 		try(final DocumentFormatterWrapper formatter = options.getFormatter()) {

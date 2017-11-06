@@ -20,6 +20,8 @@ import com.github.raymanrt.leila.formatter.DocumentFormatterWrapper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 
 import static java.lang.String.format;
 
@@ -103,10 +105,56 @@ public class DocumentsReaderOptions {
 		return query;
 	}
 
-	public String getSortByField() {
+	public Sort getSortByField() {
 		final String sortBy = cli.getOptionValue('s', "");
-		System.out.println(format(":: sortBy: %s", sortBy));
-		return sortBy;
+
+		if(sortBy.isEmpty()) {
+			return Sort.INDEXORDER;
+		}
+
+		final String[] tokens = sortBy.split(":");
+
+		String fieldname = tokens[0];
+		SortField.Type type = SortField.Type.STRING;
+		boolean reverse = false;
+
+		if(tokens.length > 1) {
+			type = maybeType(tokens[1], type);
+			reverse = maybeReverse(tokens[1]);
+		}
+		if(tokens.length > 2) {
+			reverse = maybeReverse(tokens[2]);
+		}
+
+		final Sort sort = new Sort(new SortField(fieldname, type, reverse));
+		System.out.println(format(":: sortBy: %s", sort));
+
+		return sort;
+
+	}
+
+	private SortField.Type maybeType(final String token, final SortField.Type type) {
+		if(token.toLowerCase().equals("integer")) {
+			return SortField.Type.INT;
+		}
+		try {
+			return SortField.Type.valueOf(token.toUpperCase());
+		} catch(IllegalArgumentException e) {
+			return type;
+		}
+	}
+
+	private boolean maybeReverse(final String token) {
+		if(token.toLowerCase().equals("reverse")) {
+			return true;
+		}
+		if(token.toLowerCase().equals("desc")) {
+			return true;
+		}
+		if(token.toLowerCase().equals("descending")) {
+			return true;
+		}
+		return false;
 	}
 
 	public int getLimit() {
