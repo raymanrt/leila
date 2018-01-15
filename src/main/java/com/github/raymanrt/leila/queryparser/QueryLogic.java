@@ -16,12 +16,12 @@
 
 package com.github.raymanrt.leila.queryparser;
 
+import org.apache.lucene.document.DoublePoint;
+import org.apache.lucene.document.FloatPoint;
+import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.LongPoint;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.util.BytesRefBuilder;
-import org.apache.lucene.util.NumericUtils;
 
 public interface QueryLogic {
     public Query newRangeQuery(String field, String part1, String part2, boolean startInclusive, boolean endInclusive);
@@ -46,24 +46,24 @@ public interface QueryLogic {
             Integer num1 = null;
             try {
                 num1 = Integer.parseInt(part1);
+                num1 = startInclusive ? Math.decrementExact(num1) : num1;
             } catch(NumberFormatException ex) {
 
             }
             Integer num2 = null;
             try {
                 num2 = Integer.parseInt(part2);
+                num2 = endInclusive ? Math.incrementExact(num2) : num2;
             } catch(NumberFormatException ex) {
 
             }
-            return NumericRangeQuery.newIntRange(field, num1, num2, startInclusive, endInclusive);
+
+            return IntPoint.newRangeQuery(field, num1, num2);
         }
 
         @Override
         public Query newTermQuery(final Term term) {
-            BytesRefBuilder byteRefBuilder = new BytesRefBuilder();
-            NumericUtils.intToPrefixCoded(Integer.parseInt(term.text()), 0, byteRefBuilder);
-            return new TermQuery(new Term(term.field(), byteRefBuilder.get()));
-
+            return IntPoint.newExactQuery(term.field(), Integer.parseInt(term.text()));
         }
     };
 
@@ -73,23 +73,23 @@ public interface QueryLogic {
             Float num1 = null;
             try {
                 num1 = Float.parseFloat(part1);
+                num1 = startInclusive ? FloatPoint.nextDown(num1) : num1;
             } catch(NumberFormatException ex) {
 
             }
             Float num2 = null;
             try {
                 num2 = Float.parseFloat(part2);
+                num2 = endInclusive ? FloatPoint.nextUp(num2) : num2;
             } catch(NumberFormatException ex) {
 
             }
-            return NumericRangeQuery.newFloatRange(field, num1, num2, startInclusive, endInclusive);
+            return FloatPoint.newRangeQuery(field, num1, num2);
         }
 
         @Override
         public Query newTermQuery(final Term term) {
-            BytesRefBuilder byteRefBuilder = new BytesRefBuilder();
-            NumericUtils.intToPrefixCoded(NumericUtils.floatToSortableInt(Float.parseFloat(term.text())), 0, byteRefBuilder);
-            return new TermQuery(new Term(term.field(), byteRefBuilder.get()));
+            return FloatPoint.newExactQuery(term.field(), Float.parseFloat(term.text()));
         }
     };
 
@@ -99,23 +99,23 @@ public interface QueryLogic {
             Long num1 = null;
             try {
                 num1 = Long.parseLong(part1);
+                num1 = startInclusive ? Math.decrementExact(num1) : num1;
             } catch(NumberFormatException ex) {
 
             }
             Long num2 = null;
             try {
                 num2 = Long.parseLong(part2);
+                num2 = endInclusive ? Math.incrementExact(num2) : num2;
             } catch(NumberFormatException ex) {
 
             }
-            return NumericRangeQuery.newLongRange(field, num1, num2, startInclusive, endInclusive);
+            return LongPoint.newRangeQuery(field, num1, num2);
         }
 
         @Override
         public Query newTermQuery(final Term term) {
-            BytesRefBuilder byteRefBuilder = new BytesRefBuilder();
-            NumericUtils.longToPrefixCoded(Long.parseLong(term.text()), 0, byteRefBuilder);
-            return new TermQuery(new Term(term.field(), byteRefBuilder.get()));
+            return LongPoint.newExactQuery(term.field(), Long.parseLong(term.text()));
         }
     };
 
@@ -125,23 +125,23 @@ public interface QueryLogic {
             Double num1 = null;
             try {
                 num1 = Double.parseDouble(part1);
+                num1 = startInclusive ? DoublePoint.nextDown(num1) : num1;
             } catch(NumberFormatException ex) {
 
             }
             Double num2 = null;
             try {
                 num2 = Double.parseDouble(part2);
+                num2 = endInclusive ? DoublePoint.nextUp(num2) : num2;
             } catch(NumberFormatException ex) {
 
             }
-            return NumericRangeQuery.newDoubleRange(field, num1, num2, startInclusive, endInclusive);
+            return DoublePoint.newRangeQuery(field, num1, num2);
         }
 
         @Override
         public Query newTermQuery(final Term term) {
-            BytesRefBuilder byteRefBuilder = new BytesRefBuilder();
-            NumericUtils.longToPrefixCoded(NumericUtils.doubleToSortableLong(Double.parseDouble(term.text())), 0, byteRefBuilder);
-            return new TermQuery(new Term(term.field(), byteRefBuilder.get()));
+            return DoublePoint.newExactQuery(term.field(), Double.parseDouble(term.text()));
         }
     };
 }

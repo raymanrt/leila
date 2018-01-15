@@ -16,20 +16,11 @@
 
 package com.github.raymanrt.leila.demoindex;
 
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.DoubleField;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FloatField;
-import org.apache.lucene.document.IntField;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.NumericDocValuesField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,8 +61,8 @@ public class DemoIndexBuilderTest {
 
     @Test
     public void buildDemoIndex() throws IOException {
-        Directory dir = FSDirectory.open(new File(MVN_TARGET, DEMO_INDEX));
-        IndexWriterConfig conf = new IndexWriterConfig(Version.LATEST, new WhitespaceAnalyzer());
+        Directory dir = FSDirectory.open(Paths.get(MVN_TARGET, DEMO_INDEX));
+        IndexWriterConfig conf = new IndexWriterConfig();
 
         try(IndexWriter iw = new IndexWriter(dir, conf)) {
             for(int i = 0; i < MAX_DOCS; i++) {
@@ -87,7 +78,8 @@ public class DemoIndexBuilderTest {
     private Document mockDocument(int id) {
         Document doc = new Document();
 
-        doc.add(new IntField("id", id, Field.Store.YES));
+        doc.add(new IntPoint("id", id));
+        doc.add(new StoredField("id", id));
 
         String contentValue = id % 2 == 0 ?
                 "random " + UUID.randomUUID().toString() :
@@ -95,12 +87,16 @@ public class DemoIndexBuilderTest {
         doc.add(new TextField("content", contentValue, Field.Store.YES));
 
         doc.add(new NumericDocValuesField("longid", id * 10));
+        doc.add(new StoredField("longid", id * 10));
 
-        doc.add(new DoubleField("double", toDouble(id), Field.Store.YES));
+        doc.add(new DoublePoint("double", toDouble(id)));
+        doc.add(new StoredField("double", toDouble(id)));
 
-        doc.add(new FloatField("float", toFloat(id), Field.Store.YES));
+        doc.add(new FloatPoint("float", toFloat(id)));
+        doc.add(new StoredField("float", toFloat(id)));
 
-        doc.add(new LongField("long", toLong(id), Field.Store.YES));
+        doc.add(new LongPoint("long", toLong(id)));
+        doc.add(new StoredField("long", toLong(id)));
 
         return doc;
     }

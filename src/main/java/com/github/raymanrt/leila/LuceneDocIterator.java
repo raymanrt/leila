@@ -17,11 +17,14 @@
 package com.github.raymanrt.leila;
 
 import com.github.raymanrt.leila.queryparser.LeilaQueryParser;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Fields;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -31,12 +34,7 @@ import org.apache.lucene.search.TopFieldDocs;
 import org.apache.lucene.search.highlight.TokenSources;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyList;
@@ -100,11 +98,10 @@ public class LuceneDocIterator implements Iterator<Object> {
 			return Arrays.stream(fieldsToSelect).collect(toSet());
 		}
 		
-		final Set<String> fields = Util.getFieldsFromIndex(searcher, fieldsToIgnore);
-		return fields;
+		return Util.getFieldsFromIndex(searcher, fieldsToIgnore);
 	}
 	
-	public int getTotalHits() {
+	public long getTotalHits() {
 		return search.totalHits;
 	}
 
@@ -133,8 +130,17 @@ public class LuceneDocIterator implements Iterator<Object> {
 	
 	public List<Object> getTokenStream(final String field) {
 		try {
-			// TODO: custom analyzer
-			final TokenStream ts = TokenSources.getAnyTokenStream(searcher.getIndexReader(), currentDoc, field, new WhitespaceAnalyzer());
+			Fields tvs = searcher.getIndexReader().getTermVectors(currentDoc);
+			TokenStream ts;
+			if(tvs != null) {
+				ts = TokenSources.getTermVectorTokenStreamOrNull(field, tvs, -1);
+			} else {
+				Document doc = searcher.getIndexReader().document(currentDoc, Collections.singleton(field));
+				String[] values = doc.getValues(field);
+				String text = StringUtils.join(values, "\n");
+				Analyzer analyzer = new WhitespaceAnalyzer(); // TODO: custom analyzer?
+				ts = analyzer.tokenStream(field, text);
+			}
 			return getTokens(ts);
 		} catch (final IOException|IllegalArgumentException e) {
 //			e.printStackTrace();
