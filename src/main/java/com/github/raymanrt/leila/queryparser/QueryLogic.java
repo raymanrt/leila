@@ -125,13 +125,13 @@ public interface QueryLogic {
             Double num1 = null;
             try {
                 num1 = Double.parseDouble(part1);
-            } catch(NumberFormatException ex) {
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
             Double num2 = null;
             try {
                 num2 = Double.parseDouble(part2);
-            } catch(NumberFormatException ex) {
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
             return NumericRangeQuery.newDoubleRange(field, num1, num2, startInclusive, endInclusive);

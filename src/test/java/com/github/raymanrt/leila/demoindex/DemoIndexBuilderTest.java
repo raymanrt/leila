@@ -16,22 +16,21 @@
 
 package com.github.raymanrt.leila.demoindex;
 
+import com.github.raymanrt.leila.LuceneDocIterator;
+import com.github.raymanrt.leila.Util;
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.DoubleField;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FloatField;
-import org.apache.lucene.document.IntField;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.NumericDocValuesField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -39,6 +38,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.UUID;
 
 public class DemoIndexBuilderTest {
@@ -52,8 +54,8 @@ public class DemoIndexBuilderTest {
 
     private static final float BASE_FLOAT = 0.0f;
 
-    @Before
-    public void cleanUp() throws IOException {
+    @BeforeClass
+    public static void cleanUp() throws IOException {
 
         Path path = Paths.get(MVN_TARGET)
                 .resolve(DEMO_INDEX);
@@ -66,10 +68,177 @@ public class DemoIndexBuilderTest {
                 .map(Path::toFile)
                 .forEach(File::delete)
         ;
+
+        buildDemoIndex();
     }
 
     @Test
-    public void buildDemoIndex() throws IOException {
+    public void getSearcherTest() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            Assert.assertEquals(MAX_DOCS, searcher.getIndexReader().maxDoc());
+        } catch (IOException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void alldocumentsTest() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "*:*",
+                    Sort.INDEXORDER,
+                    200,
+                    new String[]{},
+                    new String[]{},
+                    Collections.emptyMap()
+            );
+
+            Assert.assertEquals(MAX_DOCS, iteratorCount(it));
+
+        } catch (IOException|ParseException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void oneDocument() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "id_str:10",
+                    Sort.INDEXORDER,
+                    200,
+                    new String[]{},
+                    new String[]{},
+                    Collections.emptyMap()
+            );
+
+            Assert.assertEquals(1, iteratorCount(it));
+
+        } catch (IOException|ParseException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void zeroDocument() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "id:10",
+                    Sort.INDEXORDER,
+                    200,
+                    new String[]{},
+                    new String[]{},
+                    Collections.emptyMap()
+            );
+
+            Assert.assertEquals(0, iteratorCount(it));
+
+        } catch (IOException|ParseException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void intDocument() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "id:10",
+                    Sort.INDEXORDER,
+                    200,
+                    new String[]{},
+                    new String[]{},
+                    Collections.singletonMap("id", "int")
+            );
+
+            Assert.assertEquals(1, iteratorCount(it));
+
+        } catch (IOException|ParseException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void longDocument() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "long:[110 TO 111]",
+                    Sort.INDEXORDER,
+                    200,
+                    new String[]{},
+                    new String[]{},
+                    Collections.singletonMap("long", "long")
+            );
+
+            Assert.assertEquals(2, iteratorCount(it));
+
+        } catch (IOException|ParseException e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void doubleDocument() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "double:[* TO 4.0900]",
+                    Sort.INDEXORDER,
+                    200,
+                    new String[]{},
+                    new String[]{},
+                    Collections.singletonMap("double", "double")
+            );
+
+            Assert.assertEquals(10, iteratorCount(it));
+
+        } catch (IOException|ParseException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void floatDocument() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "float:000.1",
+                    Sort.INDEXORDER,
+                    200,
+                    new String[]{},
+                    new String[]{},
+                    Collections.singletonMap("float", "float")
+            );
+
+            Assert.assertEquals(1, iteratorCount(it));
+
+        } catch (IOException|ParseException e) {
+            Assert.fail();
+        }
+    }
+
+    private int iteratorCount(Iterator<Object> it) {
+        int i = 0;
+        while(it.hasNext()) {
+            it.next();
+            i ++;
+        }
+        return i;
+    }
+
+    private static void buildDemoIndex() throws IOException {
         Directory dir = FSDirectory.open(new File(MVN_TARGET, DEMO_INDEX));
         IndexWriterConfig conf = new IndexWriterConfig(Version.LATEST, new WhitespaceAnalyzer());
 
@@ -84,10 +253,11 @@ public class DemoIndexBuilderTest {
 
     }
 
-    private Document mockDocument(int id) {
+    private static Document mockDocument(int id) {
         Document doc = new Document();
 
         doc.add(new IntField("id", id, Field.Store.YES));
+        doc.add(new StringField("id_str", Integer.toString(id), Field.Store.YES));
 
         String contentValue = id % 2 == 0 ?
                 "random " + UUID.randomUUID().toString() :
@@ -105,15 +275,15 @@ public class DemoIndexBuilderTest {
         return doc;
     }
 
-    private long toLong(final int id) {
+    private static long toLong(final int id) {
         return 100L + id;
     }
 
-    private double toDouble(final int id) {
+    private static double toDouble(final int id) {
         return BASE_DOUBLE + ((double) id / 100);
     }
 
-    private float toFloat(final int id) {
+    private static float toFloat(final int id) {
         return BASE_FLOAT + ((float) id / 100);
     }
 
