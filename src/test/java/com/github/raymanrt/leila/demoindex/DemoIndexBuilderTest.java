@@ -43,12 +43,12 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.UUID;
 
-public class DemoIndexBuilderTest {
+public abstract class DemoIndexBuilderTest {
 
-    private static final int MAX_DOCS = 100;
+    public static final int MAX_DOCS = 100;
 
-    private static final String MVN_TARGET = "target";
-    private static final String DEMO_INDEX = "demo-index";
+    public static final String MVN_TARGET = "target";
+    public static final String DEMO_INDEX = "demo-index";
 
     private static final double BASE_DOUBLE = 4.0;
 
@@ -72,164 +72,7 @@ public class DemoIndexBuilderTest {
         buildDemoIndex();
     }
 
-    @Test
-    public void getSearcherTest() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            Assert.assertEquals(MAX_DOCS, searcher.getIndexReader().maxDoc());
-        } catch (IOException e) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void alldocumentsTest() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            LuceneDocIterator it = new LuceneDocIterator(
-                    searcher,
-                    "*:*",
-                    Sort.INDEXORDER,
-                    200,
-                    new String[]{},
-                    new String[]{},
-                    Collections.emptyMap()
-            );
-
-            Assert.assertEquals(MAX_DOCS, iteratorCount(it));
-
-        } catch (IOException|ParseException e) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void oneDocument() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            LuceneDocIterator it = new LuceneDocIterator(
-                    searcher,
-                    "id_str:10",
-                    Sort.INDEXORDER,
-                    200,
-                    new String[]{},
-                    new String[]{},
-                    Collections.emptyMap()
-            );
-
-            Assert.assertEquals(1, iteratorCount(it));
-
-        } catch (IOException|ParseException e) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void zeroDocument() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            LuceneDocIterator it = new LuceneDocIterator(
-                    searcher,
-                    "id:10",
-                    Sort.INDEXORDER,
-                    200,
-                    new String[]{},
-                    new String[]{},
-                    Collections.emptyMap()
-            );
-
-            Assert.assertEquals(0, iteratorCount(it));
-
-        } catch (IOException|ParseException e) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void intDocument() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            LuceneDocIterator it = new LuceneDocIterator(
-                    searcher,
-                    "id:10",
-                    Sort.INDEXORDER,
-                    200,
-                    new String[]{},
-                    new String[]{},
-                    Collections.singletonMap("id", "int")
-            );
-
-            Assert.assertEquals(1, iteratorCount(it));
-
-        } catch (IOException|ParseException e) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void longDocument() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            LuceneDocIterator it = new LuceneDocIterator(
-                    searcher,
-                    "long:[110 TO 111]",
-                    Sort.INDEXORDER,
-                    200,
-                    new String[]{},
-                    new String[]{},
-                    Collections.singletonMap("long", "long")
-            );
-
-            Assert.assertEquals(2, iteratorCount(it));
-
-        } catch (IOException|ParseException e) {
-            Assert.fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void doubleDocument() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            LuceneDocIterator it = new LuceneDocIterator(
-                    searcher,
-                    "double:[* TO 4.0900]",
-                    Sort.INDEXORDER,
-                    200,
-                    new String[]{},
-                    new String[]{},
-                    Collections.singletonMap("double", "double")
-            );
-
-            Assert.assertEquals(10, iteratorCount(it));
-
-        } catch (IOException|ParseException e) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void floatDocument() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            LuceneDocIterator it = new LuceneDocIterator(
-                    searcher,
-                    "float:000.1",
-                    Sort.INDEXORDER,
-                    200,
-                    new String[]{},
-                    new String[]{},
-                    Collections.singletonMap("float", "float")
-            );
-
-            Assert.assertEquals(1, iteratorCount(it));
-
-        } catch (IOException|ParseException e) {
-            Assert.fail();
-        }
-    }
-
-    private int iteratorCount(Iterator<Object> it) {
+    public int iteratorCount(Iterator<Object> it) {
         int i = 0;
         while(it.hasNext()) {
             it.next();
