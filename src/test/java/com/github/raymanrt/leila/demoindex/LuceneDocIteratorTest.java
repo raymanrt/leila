@@ -14,17 +14,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collections;
 
-public class LuceneDocIteratorTest extends DemoIndexBuilderTest {
-
-    @Test
-    public void getSearcherTest() {
-        try {
-            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
-            Assert.assertEquals(MAX_DOCS, searcher.getIndexReader().maxDoc());
-        } catch (IOException e) {
-            Assert.fail();
-        }
-    }
+public class LuceneDocIteratorTest extends DemoIndexBuilderAbstractTest {
 
     @Test
     public void alldocumentsTest() {

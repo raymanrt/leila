@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.UUID;
 
-public abstract class DemoIndexBuilderTest {
+public abstract class DemoIndexBuilderAbstractTest {
 
     public static final int MAX_DOCS = 100;
 
