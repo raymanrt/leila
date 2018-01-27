@@ -31,8 +31,6 @@ public class TopTermsOptions {
 		return cli.hasOption('t');
 	}
 	
-
-
 	public String[] getDesiredFields() {
 		final String[] options = cli.getOptionValues('t');
 		return options[0].split(",");

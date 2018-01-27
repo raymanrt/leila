@@ -16,30 +16,21 @@
 
 package com.github.raymanrt.leila.demoindex;
 
-import com.github.raymanrt.leila.LuceneDocIterator;
-import com.github.raymanrt.leila.Util;
-import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.UUID;
 
@@ -53,6 +44,10 @@ public abstract class DemoIndexBuilderAbstractTest {
     private static final double BASE_DOUBLE = 4.0;
 
     private static final float BASE_FLOAT = 0.0f;
+
+    private static final String ROOT = "root";
+    private static final String ODD = "odd";
+    private static final String EVEN = "even";
 
     @BeforeClass
     public static void cleanUp() throws IOException {
@@ -83,7 +78,7 @@ public abstract class DemoIndexBuilderAbstractTest {
 
     private static void buildDemoIndex() throws IOException {
         Directory dir = FSDirectory.open(new File(MVN_TARGET, DEMO_INDEX));
-        IndexWriterConfig conf = new IndexWriterConfig(Version.LATEST, new WhitespaceAnalyzer());
+        IndexWriterConfig conf = new IndexWriterConfig(Version.LATEST, new KeywordAnalyzer());
 
         try(IndexWriter iw = new IndexWriter(dir, conf)) {
             for(int i = 0; i < MAX_DOCS; i++) {
@@ -115,6 +110,8 @@ public abstract class DemoIndexBuilderAbstractTest {
 
         doc.add(new LongField("long", toLong(id), Field.Store.YES));
 
+        doc.add(new StringField("tag", getTag(id), Field.Store.YES));
+
         return doc;
     }
 
@@ -128,6 +125,14 @@ public abstract class DemoIndexBuilderAbstractTest {
 
     private static float toFloat(final int id) {
         return BASE_FLOAT + ((float) id / 100);
+    }
+
+    private static String getTag(int id) {
+        double sqrt = Math.sqrt((double) id);
+        if(sqrt % 1 == 0) return ROOT;
+        
+        if(id % 2 == 0) return EVEN;
+        return ODD;
     }
 
 }

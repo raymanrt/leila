@@ -1,22 +1,20 @@
 package com.github.raymanrt.leila.demoindex;
 
-import com.github.raymanrt.leila.LuceneDocIterator;
 import com.github.raymanrt.leila.Util;
-import com.github.raymanrt.leila.reader.OverviewReader;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Pattern;
 
+import static java.lang.String.format;
+
+/**
+ * This test is also important for the correct work of overview mode
+ */
 public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
 
     @Test
@@ -36,9 +34,9 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
 
             Set<String> fields = Util.getFieldsFromIndex(searcher);
 
-            Assert.assertEquals(6, fields.size());
+            Assert.assertEquals(7, fields.size());
 
-            Assert.assertTrue(fields.containsAll(Arrays.asList("id", "id_str", "content", "double", "float", "long")));
+            Assert.assertTrue(fields.containsAll(Arrays.asList("id", "id_str", "content", "double", "float", "long", "tag")));
         } catch (IOException e) {
             Assert.fail();
         }
@@ -50,14 +48,35 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
         try {
             IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
 
-            Set<String> fields = Util.getFieldsFromIndex(searcher, true);
+            Set<String> fieldsWithCount = Util.getFieldsFromIndex(searcher, true);
 
-            Assert.assertEquals(6, fields.size());
 
-            Assert.assertTrue(fields.containsAll(Arrays.asList("id (100)", "id_str (100)", "content (100)", "double (100)", "float (100)", "long (100)")));
+            Map<String, String> expectedFieldCountMap = new HashMap<>();
+            expectedFieldCountMap.put("id", "\\d+");
+            expectedFieldCountMap.put("id_str", "100");
+            expectedFieldCountMap.put("content", "100");
+            expectedFieldCountMap.put("double", "\\d+");
+            expectedFieldCountMap.put("float", "\\d+");
+            expectedFieldCountMap.put("long", "\\d+");
+            expectedFieldCountMap.put("tag", "3");
+
+            Assert.assertEquals(expectedFieldCountMap.size(), fieldsWithCount.size());
+
+            for(Map.Entry<String, String> expectedFieldCount : expectedFieldCountMap.entrySet()) {
+                Assert.assertTrue(existsElementMatchingPattern(fieldsWithCount, format("%s [(]%s terms[)]", expectedFieldCount.getKey(), expectedFieldCount.getValue())));
+            }
         } catch (IOException e) {
             Assert.fail();
         }
+    }
+
+    private boolean existsElementMatchingPattern(Set<String> fieldsWithCount, String pattern) {
+        for(String fieldWithCount : fieldsWithCount) {
+            if(Pattern.matches(pattern, fieldWithCount)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

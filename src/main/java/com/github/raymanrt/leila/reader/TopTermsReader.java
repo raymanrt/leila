@@ -56,7 +56,7 @@ public class TopTermsReader {
 		}
 	}
 	
-	private String[] topTermsForField(final String field, final int maxTopTerms) throws Exception {
+	public String[] topTermsForField(final String field, final int maxTopTerms) throws Exception {
 		
 		final TermStats[] commonTerms = getHighFreqTerms(searcher.getIndexReader(), maxTopTerms, field, new HighFreqTerms.DocFreqComparator());
 		
