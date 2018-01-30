@@ -34,9 +34,11 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
 
             Set<String> fields = Util.getFieldsFromIndex(searcher);
 
-            Assert.assertEquals(7, fields.size());
+            List<String> expectedFields = Arrays.asList("id", "id_str", "content", "double", "float", "long", "tag",
+                    "txt", "allstored");
+            Assert.assertEquals(expectedFields.size(), fields.size());
 
-            Assert.assertTrue(fields.containsAll(Arrays.asList("id", "id_str", "content", "double", "float", "long", "tag")));
+            Assert.assertTrue(fields.containsAll(expectedFields));
         } catch (IOException e) {
             Assert.fail();
         }
@@ -52,13 +54,15 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
 
 
             Map<String, String> expectedFieldCountMap = new HashMap<>();
-            expectedFieldCountMap.put("id", "\\d+");
+            expectedFieldCountMap.put("id", "\\d{3}");
             expectedFieldCountMap.put("id_str", "100");
-            expectedFieldCountMap.put("content", "100");
-            expectedFieldCountMap.put("double", "\\d+");
-            expectedFieldCountMap.put("float", "\\d+");
-            expectedFieldCountMap.put("long", "\\d+");
+            expectedFieldCountMap.put("content", "\\d{3}");
+            expectedFieldCountMap.put("double", "\\d{3}");
+            expectedFieldCountMap.put("float", "\\d{3}");
+            expectedFieldCountMap.put("long", "\\d{3}");
             expectedFieldCountMap.put("tag", "3");
+            expectedFieldCountMap.put("txt", "\\d{3}");
+            expectedFieldCountMap.put("allstored", "\\d{3}");
 
             Assert.assertEquals(expectedFieldCountMap.size(), fieldsWithCount.size());
 

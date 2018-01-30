@@ -16,10 +16,11 @@
 
 package com.github.raymanrt.leila.demoindex;
 
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
@@ -55,14 +56,12 @@ public abstract class DemoIndexBuilderAbstractTest {
         Path path = Paths.get(MVN_TARGET)
                 .resolve(DEMO_INDEX);
 
-        if(!path.toFile().exists()) {
-            return;
+        if(path.toFile().exists()) {
+            Files.walk(path)
+                    .map(Path::toFile)
+                    .forEach(File::delete)
+            ;
         }
-
-        Files.walk(path)
-                .map(Path::toFile)
-                .forEach(File::delete)
-        ;
 
         buildDemoIndex();
     }
@@ -78,7 +77,7 @@ public abstract class DemoIndexBuilderAbstractTest {
 
     private static void buildDemoIndex() throws IOException {
         Directory dir = FSDirectory.open(new File(MVN_TARGET, DEMO_INDEX));
-        IndexWriterConfig conf = new IndexWriterConfig(Version.LATEST, new KeywordAnalyzer());
+        IndexWriterConfig conf = new IndexWriterConfig(Version.LATEST, new WhitespaceAnalyzer());
 
         try(IndexWriter iw = new IndexWriter(dir, conf)) {
             for(int i = 0; i < MAX_DOCS; i++) {
@@ -111,6 +110,18 @@ public abstract class DemoIndexBuilderAbstractTest {
         doc.add(new LongField("long", toLong(id), Field.Store.YES));
 
         doc.add(new StringField("tag", getTag(id), Field.Store.YES));
+
+        doc.add(new StringField("txt", String.format("some text for %s", id), Field.Store.YES));
+
+        FieldType type = new FieldType();
+        type.setStored(true);
+        type.setIndexed(true);
+        type.setTokenized(true);
+        type.setStoreTermVectors(true);
+        type.setStoreTermVectorPositions(true);
+        type.setStoreTermVectorOffsets(true);
+        IndexableField f = new Field("allstored", String.format("some stored text for %s", id), type);
+        doc.add(f);
 
         return doc;
     }
