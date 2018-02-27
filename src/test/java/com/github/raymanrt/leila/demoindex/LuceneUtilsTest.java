@@ -34,6 +34,7 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
 
             Set<String> fields = Util.getFieldsFromIndex(searcher);
 
+            // TODO: strange: why doesn't include longid field? (maybe a bug?)
             List<String> expectedFields = Arrays.asList("id", "id_str", "content", "double", "float", "long", "tag",
                     "txt", "allstored");
             Assert.assertEquals(expectedFields.size(), fields.size());
@@ -60,6 +61,7 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
             expectedFieldCountMap.put("double", "\\d{3}");
             expectedFieldCountMap.put("float", "\\d{3}");
             expectedFieldCountMap.put("long", "\\d{3}");
+            // TODO: strange: why doesn't include longid field? (maybe a bug?)
             expectedFieldCountMap.put("tag", "3");
             expectedFieldCountMap.put("txt", "\\d{3}");
             expectedFieldCountMap.put("allstored", "\\d{3}");
