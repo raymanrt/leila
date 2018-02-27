@@ -43,18 +43,18 @@ public interface QueryLogic {
     public static QueryLogic INTEGER = new QueryLogic() {
         @Override
         public Query newRangeQuery(final String field, final String part1, final String part2, final boolean startInclusive, final boolean endInclusive) {
-            Integer num1 = null;
+            Integer num1 = Integer.MIN_VALUE;
             try {
                 num1 = Integer.parseInt(part1);
-                num1 = startInclusive ? Math.decrementExact(num1) : num1;
-            } catch(NumberFormatException ex) {
+                num1 = startInclusive ? num1: Math.incrementExact(num1);
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
-            Integer num2 = null;
+            Integer num2 = Integer.MAX_VALUE;
             try {
                 num2 = Integer.parseInt(part2);
-                num2 = endInclusive ? Math.incrementExact(num2) : num2;
-            } catch(NumberFormatException ex) {
+                num2 = endInclusive ? num2 : Math.decrementExact(num2);
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
 
@@ -70,18 +70,18 @@ public interface QueryLogic {
     public static QueryLogic FLOAT = new QueryLogic() {
         @Override
         public Query newRangeQuery(final String field, final String part1, final String part2, final boolean startInclusive, final boolean endInclusive) {
-            Float num1 = null;
+            Float num1 = Float.MIN_VALUE;
             try {
                 num1 = Float.parseFloat(part1);
-                num1 = startInclusive ? FloatPoint.nextDown(num1) : num1;
-            } catch(NumberFormatException ex) {
+                num1 = startInclusive ? num1 : FloatPoint.nextUp(num1);
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
-            Float num2 = null;
+            Float num2 = Float.MAX_VALUE;
             try {
                 num2 = Float.parseFloat(part2);
-                num2 = endInclusive ? FloatPoint.nextUp(num2) : num2;
-            } catch(NumberFormatException ex) {
+                num2 = endInclusive ? num2 : FloatPoint.nextDown(num2);
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
             return FloatPoint.newRangeQuery(field, num1, num2);
@@ -96,18 +96,18 @@ public interface QueryLogic {
     public static QueryLogic LONG = new QueryLogic() {
         @Override
         public Query newRangeQuery(final String field, final String part1, final String part2, final boolean startInclusive, final boolean endInclusive) {
-            Long num1 = null;
+            Long num1 = Long.MIN_VALUE;
             try {
                 num1 = Long.parseLong(part1);
-                num1 = startInclusive ? Math.decrementExact(num1) : num1;
-            } catch(NumberFormatException ex) {
+                num1 = startInclusive ? num1 : Math.incrementExact(num1);
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
-            Long num2 = null;
+            Long num2 = Long.MAX_VALUE;
             try {
                 num2 = Long.parseLong(part2);
-                num2 = endInclusive ? Math.incrementExact(num2) : num2;
-            } catch(NumberFormatException ex) {
+                num2 = endInclusive ? num2 : Math.decrementExact(num2);
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
             return LongPoint.newRangeQuery(field, num1, num2);
@@ -122,18 +122,18 @@ public interface QueryLogic {
     public static QueryLogic DOUBLE = new QueryLogic() {
         @Override
         public Query newRangeQuery(final String field, final String part1, final String part2, final boolean startInclusive, final boolean endInclusive) {
-            Double num1 = null;
+            Double num1 = Double.MIN_VALUE;
             try {
                 num1 = Double.parseDouble(part1);
-                num1 = startInclusive ? DoublePoint.nextDown(num1) : num1;
-            } catch(NumberFormatException ex) {
+                num1 = startInclusive ? num1 : DoublePoint.nextUp(num1);
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
-            Double num2 = null;
+            Double num2 = Double.MAX_VALUE;
             try {
                 num2 = Double.parseDouble(part2);
-                num2 = endInclusive ? DoublePoint.nextUp(num2) : num2;
-            } catch(NumberFormatException ex) {
+                num2 = endInclusive ? num2 : DoublePoint.nextDown(num2);
+            } catch(NumberFormatException|NullPointerException ex) {
 
             }
             return DoublePoint.newRangeQuery(field, num1, num2);

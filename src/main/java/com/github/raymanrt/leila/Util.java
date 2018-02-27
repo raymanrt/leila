@@ -82,6 +82,6 @@ public class Util {
 	}
 	
 	public static Set<String> getFieldsFromIndex(final IndexSearcher searcher, final String[] fieldsToIgnore) throws IOException {
-		return getFieldsFromIndex(searcher, new String[]{}, false);
+		return getFieldsFromIndex(searcher, fieldsToIgnore, false);
 	}
 }
