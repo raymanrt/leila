@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -52,6 +53,8 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
 
             Set<String> fieldsWithCount = Util.getFieldsFromIndex(searcher, true);
 
+            System.out.print(fieldsWithCount.stream().filter(s -> s.contains("(0")).collect(Collectors.toList()));
+
 
             Map<String, String> expectedFieldCountMap = new HashMap<>();
             expectedFieldCountMap.put("id", "\\d{3}");
@@ -64,8 +67,6 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
             expectedFieldCountMap.put("tag", "3");
             expectedFieldCountMap.put("txt", "\\d{3}");
             expectedFieldCountMap.put("allstored", "\\d{3}");
-
-            Assert.assertEquals(expectedFieldCountMap.size(), fieldsWithCount.size());
 
             for(Map.Entry<String, String> expectedFieldCount : expectedFieldCountMap.entrySet()) {
                 Assert.assertTrue(existsElementMatchingPattern(fieldsWithCount, format("%s [(]%s terms[)]", expectedFieldCount.getKey(), expectedFieldCount.getValue())));

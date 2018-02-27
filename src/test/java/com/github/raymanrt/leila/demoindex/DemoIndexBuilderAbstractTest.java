@@ -70,7 +70,7 @@ public abstract class DemoIndexBuilderAbstractTest {
     public int iteratorCount(Iterator<Object> it) {
         int i = 0;
         while(it.hasNext()) {
-            System.out.println(it.next());
+            it.next();
             i ++;
         }
         return i;
@@ -130,13 +130,15 @@ public abstract class DemoIndexBuilderAbstractTest {
 
 
     private static Document mockDocument(int id) {
+        FieldType allFieldType = getAllFieldType();
+
         Document doc = new Document();
 
         doc.add(new IntPoint("id", id));
         doc.add(new StoredField("id", id));
 
-        doc.add(new StringField("id_str", Integer.toString(id), Field.Store.YES));
         doc.add(new SortedDocValuesField ("id_str", new BytesRef(Integer.toString(id)) ));
+        doc.add(new Field("id_str", Integer.toString(id), allFieldType));
 
         String contentValue = id % 2 == 0 ?
                 "random " + UUID.randomUUID().toString() :
@@ -155,22 +157,27 @@ public abstract class DemoIndexBuilderAbstractTest {
         doc.add(new LongPoint("long", toLong(id)));
         doc.add(new StoredField("long", toLong(id)));
 
-        doc.add(new StringField("tag", getTag(id), Field.Store.YES));
+        doc.add(new Field("tag", getTag(id), allFieldType));
 
-        doc.add(new StringField("txt", String.format("some text for %s", id), Field.Store.YES));
+        IndexableField f = new Field("txt", String.format("some text for %s", id), allFieldType);
+        doc.add(f);
 
+
+        f = new Field("allstored", String.format("some stored text for %s", id), allFieldType);
+        doc.add(f);
+
+        return doc;
+    }
+
+    private static FieldType getAllFieldType() {
         FieldType type = new FieldType();
         type.setStored(true);
         type.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
-//        type.setIndexed(true);
         type.setTokenized(true);
         type.setStoreTermVectors(true);
         type.setStoreTermVectorPositions(true);
         type.setStoreTermVectorOffsets(true);
-        IndexableField f = new Field("allstored", String.format("some stored text for %s", id), type);
-        doc.add(f);
-
-        return doc;
+        return type;
     }
 
     private static long toLong(final int id) {
