@@ -137,7 +137,7 @@ public abstract class DemoIndexBuilderAbstractTest {
         doc.add(new IntPoint("id", id));
         doc.add(new StoredField("id", id));
 
-        doc.add(new SortedDocValuesField ("id_str", new BytesRef(Integer.toString(id)) ));
+        doc.add(new SortedDocValuesField ("id_str", new BytesRef(Integer.toString(id)))); // TODO: why SortedDocValuesField?
         doc.add(new Field("id_str", Integer.toString(id), allFieldType));
 
         String contentValue = id % 2 == 0 ?

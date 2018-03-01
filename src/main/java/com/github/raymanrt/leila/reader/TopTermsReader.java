@@ -57,12 +57,16 @@ public class TopTermsReader {
 	}
 	
 	public String[] topTermsForField(final String field, final int maxTopTerms) throws Exception {
-		
-		final TermStats[] commonTerms = getHighFreqTerms(searcher.getIndexReader(), maxTopTerms, field, new HighFreqTerms.DocFreqComparator());
-		
-		return Arrays.stream(commonTerms)
-			.map(term -> term.termtext.utf8ToString() + " (" + term.docFreq + ")") // TODO: still a bug here, on accented or utf-8 chars
-			.toArray(size -> new String[size]);		
+		try {
+			TermStats[] commonTerms =
+					getHighFreqTerms(searcher.getIndexReader(), maxTopTerms, field, new HighFreqTerms.DocFreqComparator());
+			return Arrays.stream(commonTerms)
+					.map(term -> term.termtext.utf8ToString() + " (" + term.docFreq + ")") // TODO: still a bug here, on accented or utf-8 chars
+					.toArray(size -> new String[size]);
+		} catch(Exception ex) {
+			return new String[]{};
+		}
+
 	}
 
 }

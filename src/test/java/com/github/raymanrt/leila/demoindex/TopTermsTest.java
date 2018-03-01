@@ -45,4 +45,20 @@ public class TopTermsTest extends DemoIndexBuilderAbstractTest {
         }
     }
 
+    @Test
+    public void intPointCantHaveTopTerms() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+
+            TopTermsReader reader = new TopTermsReader(searcher, null);
+
+            String[] topTerms = reader.topTermsForField("id", 10);
+
+            Assert.assertEquals(0, topTerms.length);
+
+        } catch (Exception e) {
+            Assert.fail();
+        }
+    }
+
 }

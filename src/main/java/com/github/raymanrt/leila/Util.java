@@ -16,10 +16,7 @@
 
 package com.github.raymanrt.leila;
 
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.FieldInfos;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -51,26 +48,49 @@ public class Util {
 				return;
 			}
 
-			fields.add(formatField(searcher.getIndexReader(), fieldInfo.name, withCount));
+			fields.add(formatField(searcher.getIndexReader(), fieldInfo, withCount));
 		});
 
 		return fields;
 	}
 
-	private static String formatField(IndexReader reader, final String field, final boolean withCount) {
+	private static String formatField(IndexReader reader, final FieldInfo field, final boolean withCount) {
 		if(withCount) {
 			try {
 				long count = count(reader, field);
-				return String.format("%s (%d terms)", field, count);
+				return String.format("%s (%d terms)", field.name, count);
 			} catch (IOException e) {
-				return String.format("%s (???)", field);
+				return String.format("%s (???)", field.name);
 			}
 		}
-		return field;
+		return field.name;
 	}
 
-	private static long count(final IndexReader reader, String field) throws IOException {
-		return reader.getSumTotalTermFreq(field);
+	private static long count(final IndexReader reader, FieldInfo field) throws IOException {
+		if(isPoint(field)) {
+			return PointValues.size(reader, field.name);
+		}
+
+		if(isDocValue(field)) {
+			return -1; // lucene doesn't store the inverted index for docvalues
+			// then it's very expensive to count the distinct values
+		}
+
+		Terms terms = MultiFields.getTerms(reader, field.name);
+		if(terms != null) {
+			return terms.size(); // TODO beware that doesn't take deleted documents into account
+		}
+
+		return -1;
+
+	}
+
+	private static boolean isDocValue(FieldInfo field) {
+		return !field.getDocValuesType().equals(DocValuesType.NONE);
+	}
+
+	private static boolean isPoint(FieldInfo field) {
+		return field.getPointDimensionCount() > 0 && field.getPointNumBytes() > 0;
 	}
 
 	public static Set<String> getFieldsFromIndex(final IndexSearcher searcher, final boolean withCount) throws IOException {

@@ -131,10 +131,12 @@ public class LuceneDocIterator implements Iterator<Object> {
 	public List<Object> getTokenStream(final String field) {
 		try {
 			Fields tvs = searcher.getIndexReader().getTermVectors(currentDoc);
-			TokenStream ts;
+			TokenStream ts = null;
 			if(tvs != null) {
 				ts = TokenSources.getTermVectorTokenStreamOrNull(field, tvs, -1);
-			} else {
+			}
+
+			if(ts == null) {
 				Document doc = searcher.getIndexReader().document(currentDoc, Collections.singleton(field));
 				String[] values = doc.getValues(field);
 				String text = StringUtils.join(values, "\n");

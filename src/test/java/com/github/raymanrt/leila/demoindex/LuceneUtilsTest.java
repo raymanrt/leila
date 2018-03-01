@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -53,17 +52,14 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
 
             Set<String> fieldsWithCount = Util.getFieldsFromIndex(searcher, true);
 
-            System.out.print(fieldsWithCount.stream().filter(s -> s.contains("(0")).collect(Collectors.toList()));
-
-
             Map<String, String> expectedFieldCountMap = new HashMap<>();
             expectedFieldCountMap.put("id", "\\d{3}");
-            expectedFieldCountMap.put("id_str", "100");
+            expectedFieldCountMap.put("id_str", "-1"); // docvalues can't be counted
             expectedFieldCountMap.put("content", "\\d{3}");
             expectedFieldCountMap.put("double", "\\d{3}");
             expectedFieldCountMap.put("float", "\\d{3}");
             expectedFieldCountMap.put("long", "\\d{3}");
-            expectedFieldCountMap.put("longid", "\\d{3}");
+            expectedFieldCountMap.put("longid", "-1"); // docvalues can't be counted
             expectedFieldCountMap.put("tag", "3");
             expectedFieldCountMap.put("txt", "\\d{3}");
             expectedFieldCountMap.put("allstored", "\\d{3}");
@@ -72,7 +68,7 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
                 Assert.assertTrue(existsElementMatchingPattern(fieldsWithCount, format("%s [(]%s terms[)]", expectedFieldCount.getKey(), expectedFieldCount.getValue())));
             }
         } catch (IOException e) {
-            Assert.fail();
+            Assert.fail(e.getMessage());
         }
     }
 
