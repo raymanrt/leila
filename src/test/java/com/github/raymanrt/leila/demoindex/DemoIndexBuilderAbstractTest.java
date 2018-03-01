@@ -91,44 +91,6 @@ public abstract class DemoIndexBuilderAbstractTest {
 
     }
 
-//    private static Document mockDocument(int id) {
-//        Document doc = new Document();
-//
-//        doc.add(new IntField("id", id, Field.Store.YES));
-//        doc.add(new StringField("id_str", Integer.toString(id), Field.Store.YES));
-//
-//        String contentValue = id % 2 == 0 ?
-//                "random " + UUID.randomUUID().toString() :
-//                UUID.randomUUID().toString();
-//        doc.add(new TextField("content", contentValue, Field.Store.YES));
-//
-//        doc.add(new NumericDocValuesField("longid", id * 10));
-//
-//        doc.add(new DoubleField("double", toDouble(id), Field.Store.YES));
-//
-//        doc.add(new FloatField("float", toFloat(id), Field.Store.YES));
-//
-//        doc.add(new LongField("long", toLong(id), Field.Store.YES));
-//
-//        doc.add(new StringField("tag", getTag(id), Field.Store.YES));
-//
-//        doc.add(new StringField("txt", String.format("some text for %s", id), Field.Store.YES));
-//
-//        FieldType type = new FieldType();
-//        type.setStored(true);
-//        type.setIndexed(true);
-//        type.setTokenized(true);
-//        type.setStoreTermVectors(true);
-//        type.setStoreTermVectorPositions(true);
-//        type.setStoreTermVectorOffsets(true);
-//        IndexableField f = new Field("allstored", String.format("some stored text for %s", id), type);
-//        doc.add(f);
-//
-//        return doc;
-//    }
-
-
-
     private static Document mockDocument(int id) {
         FieldType allFieldType = getAllFieldType();
 
