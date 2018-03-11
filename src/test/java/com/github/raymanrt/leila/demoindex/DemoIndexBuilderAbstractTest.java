@@ -18,12 +18,13 @@ package com.github.raymanrt.leila.demoindex;
 
 import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
 import org.apache.lucene.document.*;
+import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.util.BytesRef;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 
@@ -76,8 +77,8 @@ public abstract class DemoIndexBuilderAbstractTest {
     }
 
     private static void buildDemoIndex() throws IOException {
-        Directory dir = FSDirectory.open(new File(MVN_TARGET, DEMO_INDEX));
-        IndexWriterConfig conf = new IndexWriterConfig(Version.LATEST, new WhitespaceAnalyzer());
+        Directory dir = FSDirectory.open(Paths.get(MVN_TARGET, DEMO_INDEX));
+        IndexWriterConfig conf = new IndexWriterConfig(new WhitespaceAnalyzer());
 
         try(IndexWriter iw = new IndexWriter(dir, conf)) {
             for(int i = 0; i < MAX_DOCS; i++) {
@@ -91,10 +92,15 @@ public abstract class DemoIndexBuilderAbstractTest {
     }
 
     private static Document mockDocument(int id) {
+        FieldType allFieldType = getAllFieldType();
+
         Document doc = new Document();
 
-        doc.add(new IntField("id", id, Field.Store.YES));
-        doc.add(new StringField("id_str", Integer.toString(id), Field.Store.YES));
+        doc.add(new IntPoint("id", id));
+        doc.add(new StoredField("id", id));
+
+        doc.add(new SortedDocValuesField ("id_str", new BytesRef(Integer.toString(id)))); // TODO: why SortedDocValuesField?
+        doc.add(new Field("id_str", Integer.toString(id), allFieldType));
 
         String contentValue = id % 2 == 0 ?
                 "random " + UUID.randomUUID().toString() :
@@ -102,28 +108,39 @@ public abstract class DemoIndexBuilderAbstractTest {
         doc.add(new TextField("content", contentValue, Field.Store.YES));
 
         doc.add(new NumericDocValuesField("longid", id * 10));
+        //doc.add(new StoredField("longid", id * 10));
 
-        doc.add(new DoubleField("double", toDouble(id), Field.Store.YES));
+        doc.add(new DoublePoint("double", toDouble(id)));
+        doc.add(new StoredField("double", toDouble(id)));
 
-        doc.add(new FloatField("float", toFloat(id), Field.Store.YES));
+        doc.add(new FloatPoint("float", toFloat(id)));
+        doc.add(new StoredField("float", toFloat(id)));
 
-        doc.add(new LongField("long", toLong(id), Field.Store.YES));
+        doc.add(new LongPoint("long", toLong(id)));
+        doc.add(new StoredField("long", toLong(id)));
 
-        doc.add(new StringField("tag", getTag(id), Field.Store.YES));
+        doc.add(new StringField("tag", getTag(id), Field.Store.NO));
+//        doc.add(new Field("tag", getTag(id), allFieldType));
 
-        doc.add(new StringField("txt", String.format("some text for %s", id), Field.Store.YES));
+        IndexableField f = new Field("txt", String.format("some text for %s", id), allFieldType);
+        doc.add(f);
 
+
+        f = new Field("allstored", String.format("some stored text for %s", id), allFieldType);
+        doc.add(f);
+
+        return doc;
+    }
+
+    private static FieldType getAllFieldType() {
         FieldType type = new FieldType();
         type.setStored(true);
-        type.setIndexed(true);
+        type.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
         type.setTokenized(true);
         type.setStoreTermVectors(true);
         type.setStoreTermVectorPositions(true);
         type.setStoreTermVectorOffsets(true);
-        IndexableField f = new Field("allstored", String.format("some stored text for %s", id), type);
-        doc.add(f);
-
-        return doc;
+        return type;
     }
 
     private static long toLong(final int id) {
@@ -141,7 +158,7 @@ public abstract class DemoIndexBuilderAbstractTest {
     private static String getTag(int id) {
         double sqrt = Math.sqrt((double) id);
         if(sqrt % 1 == 0) return ROOT;
-        
+
         if(id % 2 == 0) return EVEN;
         return ODD;
     }
