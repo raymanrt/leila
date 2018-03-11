@@ -79,4 +79,32 @@ public class LuceneDocIteratorTokenStreamTest extends DemoIndexBuilderAbstractTe
         }
     }
 
+    @Test
+    public void intPointTokenStreamTest() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "*:*",
+                    Sort.INDEXORDER,
+                    1,
+                    new String[]{},
+                    new String[]{},
+                    Collections.emptyMap()
+            );
+
+            Assert.assertTrue(it.hasNext());
+
+            Assert.assertNotNull(it.next());
+
+            List<Object> tokens = it.getTokenStream("id");
+            Assert.assertEquals(1, tokens.size());
+
+            Assert.assertEquals("0 <0-1>", tokens.get(0));
+
+        } catch (IOException|ParseException e) {
+            Assert.fail();
+        }
+    }
+
 }

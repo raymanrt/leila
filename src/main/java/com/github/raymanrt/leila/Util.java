@@ -16,70 +16,81 @@
 
 package com.github.raymanrt.leila;
 
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.Fields;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.concurrent.atomic.LongAdder;
 
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.lucene.index.MultiFields.getFields;
 
 public class Util {
 	
 	public static IndexSearcher getSearcher(final String index) throws IOException {
-		final Directory directory = FSDirectory.open(new File(index));
+		final Directory directory = FSDirectory.open(Paths.get(index));
 	    final DirectoryReader reader = DirectoryReader.open(directory);
 		return new IndexSearcher(reader);
 	}
-	
-	public static Set<String> getFieldsFromIndex(final IndexSearcher searcher, final String[] fieldsToIgnore, final boolean withCount) throws IOException {
+
+	public static Set<String> getFieldsFromIndex(final IndexSearcher searcher, final String[] fieldsToIgnore, final boolean withCount) {
 		final Set<String> fieldsToIgnoreSet = stream(fieldsToIgnore).collect(toSet());
-		
-		final Fields indexFields = getFields(searcher.getIndexReader());
-		final TermsEnum termsEnum = null;
-		final LongAdder adder = new LongAdder();
-		
+
+		FieldInfos indexFields = MultiFields.getMergedFieldInfos(searcher.getIndexReader());
+
 		final Set<String> fields = new TreeSet<>();
-		for(final String field : indexFields) {
-			if(fieldsToIgnoreSet.contains(field)) {
-				continue;
+		indexFields.forEach(fieldInfo -> {
+			if(fieldsToIgnoreSet.contains(fieldInfo.name)) {
+				return;
 			}
-			
-			fields.add(formatField(indexFields, field, withCount, termsEnum, adder));
-		}
-		
+
+			fields.add(formatField(searcher.getIndexReader(), fieldInfo, withCount));
+		});
+
 		return fields;
 	}
 
-	private static String formatField(final Fields indexFields, final String field, final boolean withCount, final TermsEnum termsEnum, final LongAdder adder) throws IOException {
+	private static String formatField(IndexReader reader, final FieldInfo field, final boolean withCount) {
 		if(withCount) {
-			final long count = count(indexFields, field, termsEnum, adder);
-			return String.format("%s (%d terms)", field, count);
+			try {
+				long count = count(reader, field);
+				return String.format("%s (%d terms)", field.name, count);
+			} catch (IOException e) {
+				return String.format("%s (???)", field.name);
+			}
 		}
-		return field;
+		return field.name;
 	}
 
-	private static long count(final Fields indexFields, final String field, final TermsEnum termsEnum, final LongAdder adder) throws IOException {
-		adder.reset();
-		final Terms terms = indexFields.terms(field);
-		if(terms == null) {
-			return 0;
+	private static long count(final IndexReader reader, FieldInfo field) throws IOException {
+		if(isPoint(field)) {
+			return PointValues.size(reader, field.name);
 		}
-		final TermsEnum it = terms.iterator(termsEnum);
-		while(it.next() != null) {
-			adder.increment();
+
+		if(isDocValue(field)) {
+			return -1; // lucene doesn't store the inverted index for docvalues
+			// then it's very expensive to count the distinct values
 		}
-		return adder.longValue();
+
+		Terms terms = MultiFields.getTerms(reader, field.name);
+		if(terms != null) {
+			return terms.size(); // TODO beware that doesn't take deleted documents into account
+		}
+
+		return -1;
+
+	}
+
+	private static boolean isDocValue(FieldInfo field) {
+		return !field.getDocValuesType().equals(DocValuesType.NONE);
+	}
+
+	private static boolean isPoint(FieldInfo field) {
+		return field.getPointDimensionCount() > 0 && field.getPointNumBytes() > 0;
 	}
 
 	public static Set<String> getFieldsFromIndex(final IndexSearcher searcher, final boolean withCount) throws IOException {

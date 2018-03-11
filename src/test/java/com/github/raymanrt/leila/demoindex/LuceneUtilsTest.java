@@ -34,9 +34,8 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
 
             Set<String> fields = Util.getFieldsFromIndex(searcher);
 
-            // TODO: strange: why doesn't include longid field? (maybe a bug?)
-            List<String> expectedFields = Arrays.asList("id", "id_str", "content", "double", "float", "long", "tag",
-                    "txt", "allstored");
+            List<String> expectedFields = Arrays.asList("id", "id_str", "content", "double", "float", "long", "longid",
+                    "tag", "txt", "allstored");
             Assert.assertEquals(expectedFields.size(), fields.size());
 
             Assert.assertTrue(fields.containsAll(expectedFields));
@@ -52,27 +51,25 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
             IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
 
             Set<String> fieldsWithCount = Util.getFieldsFromIndex(searcher, true);
-
+//            System.out.println(fieldsWithCount);
 
             Map<String, String> expectedFieldCountMap = new HashMap<>();
             expectedFieldCountMap.put("id", "\\d{3}");
-            expectedFieldCountMap.put("id_str", "100");
+            expectedFieldCountMap.put("id_str", "-1"); // docvalues can't be counted
             expectedFieldCountMap.put("content", "\\d{3}");
             expectedFieldCountMap.put("double", "\\d{3}");
             expectedFieldCountMap.put("float", "\\d{3}");
             expectedFieldCountMap.put("long", "\\d{3}");
-            // TODO: strange: why doesn't include longid field? (maybe a bug?)
+            expectedFieldCountMap.put("longid", "-1"); // docvalues can't be counted
             expectedFieldCountMap.put("tag", "3");
             expectedFieldCountMap.put("txt", "\\d{3}");
             expectedFieldCountMap.put("allstored", "\\d{3}");
-
-            Assert.assertEquals(expectedFieldCountMap.size(), fieldsWithCount.size());
 
             for(Map.Entry<String, String> expectedFieldCount : expectedFieldCountMap.entrySet()) {
                 Assert.assertTrue(existsElementMatchingPattern(fieldsWithCount, format("%s [(]%s terms[)]", expectedFieldCount.getKey(), expectedFieldCount.getValue())));
             }
         } catch (IOException e) {
-            Assert.fail();
+            Assert.fail(e.getMessage());
         }
     }
 

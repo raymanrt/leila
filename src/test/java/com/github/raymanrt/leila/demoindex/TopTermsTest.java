@@ -8,15 +8,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
 
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
 
 public class TopTermsTest extends DemoIndexBuilderAbstractTest {
@@ -46,6 +39,22 @@ public class TopTermsTest extends DemoIndexBuilderAbstractTest {
             Assert.assertEquals(2, topTerms.length);
 
             Assert.assertTrue(asList(topTerms).containsAll(asList("odd (45)", "even (45)")));
+
+        } catch (Exception e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void intPointCantHaveTopTerms() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+
+            TopTermsReader reader = new TopTermsReader(searcher, null);
+
+            String[] topTerms = reader.topTermsForField("id", 10);
+
+            Assert.assertEquals(0, topTerms.length);
 
         } catch (Exception e) {
             Assert.fail();
