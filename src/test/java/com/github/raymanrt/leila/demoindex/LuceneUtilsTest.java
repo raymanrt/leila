@@ -51,6 +51,7 @@ public class LuceneUtilsTest extends DemoIndexBuilderAbstractTest {
             IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
 
             Set<String> fieldsWithCount = Util.getFieldsFromIndex(searcher, true);
+//            System.out.println(fieldsWithCount);
 
             Map<String, String> expectedFieldCountMap = new HashMap<>();
             expectedFieldCountMap.put("id", "\\d{3}");
