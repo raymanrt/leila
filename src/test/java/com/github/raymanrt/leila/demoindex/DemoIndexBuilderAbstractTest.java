@@ -141,7 +141,7 @@ public abstract class DemoIndexBuilderAbstractTest {
     private static String getTag(int id) {
         double sqrt = Math.sqrt((double) id);
         if(sqrt % 1 == 0) return ROOT;
-        
+
         if(id % 2 == 0) return EVEN;
         return ODD;
     }
