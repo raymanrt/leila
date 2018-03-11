@@ -262,7 +262,7 @@ Next releases
 -------------
 
 This project is developed in my spare time, there are no scheduled releases. I'll try to fix bugs and resolve opened
-issued. Pull requests and suggestions are wellcome. That said there is a list of feature desired for the next releases:
+issues. Pull requests and suggestions are wellcome. That said there is a list of feature desired for the next releases:
 * more unit test coverage
 * support for custom query parser
 * support for custom query analyzer
