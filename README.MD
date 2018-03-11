@@ -234,6 +234,11 @@ implementation.
 Version History
 ---------------
 
+Version 0.5.0
+* many unit test which bring also minor fixes
+* master branch uses lucene 7.2.0 (which can read also 6 and 5 lucene indexes)
+* lucene 4 compatibility is mantained in another branch
+
 Version 0.4.0
 * added numeric sorting and reversed sorting
 
