@@ -7,6 +7,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortedNumericSortField;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -201,6 +202,31 @@ public class LuceneDocIteratorTest extends DemoIndexBuilderAbstractTest {
             Document doc = it.next();
             Assert.assertEquals(1, doc.getFields().size());
             Assert.assertEquals("0.99", doc.get("float"));
+
+            Assert.assertFalse(it.hasNext());
+
+        } catch (IOException|ParseException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void sortedNumericTest() {
+        try {
+            IndexSearcher searcher = Util.getSearcher(Paths.get(MVN_TARGET, DEMO_INDEX).toString());
+            LuceneDocIterator it = new LuceneDocIterator(
+                    searcher,
+                    "*:*",
+                    new Sort(new SortedNumericSortField("long", SortField.Type.LONG, true)),
+                    1,
+                    new String[]{"long"},
+                    new String[]{},
+                    Collections.emptyMap()
+            );
+
+            Document doc = it.next();
+            Assert.assertEquals(1, doc.getFields().size());
+            Assert.assertEquals("199", doc.get("long"));
 
             Assert.assertFalse(it.hasNext());
 

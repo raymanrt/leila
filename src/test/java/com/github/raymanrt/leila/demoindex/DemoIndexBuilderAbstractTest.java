@@ -118,6 +118,7 @@ public abstract class DemoIndexBuilderAbstractTest {
 
         doc.add(new LongPoint("long", toLong(id)));
         doc.add(new StoredField("long", toLong(id)));
+        doc.add(new SortedNumericDocValuesField("long", toLong(id)));
 
         doc.add(new StringField("tag", getTag(id), Field.Store.NO));
 //        doc.add(new Field("tag", getTag(id), allFieldType));

@@ -130,21 +130,27 @@ Sorting results
 
 As said in the previous paragraph, the `-s` option can be used to specify the sorting field.
 
-More sorting preferences could be specified with this option, which are the datatype for comparing fields (INT, FLOAT,
-DOUBLE, LONG) or the direction of sort, which can be: ascending or descending (reverse).
+More sorting preferences could be specified with this option, which sort field to use
+(default, [sortednumeric](https://lucene.apache.org/core/7_2_0/core/org/apache/lucene/search/SortedNumericSortField.html),
+[sortedset](https://lucene.apache.org/core/7_2_0/core/org/apache/lucene/search/SortedSetSortField.html)),
+which are the datatype for comparing fields (INT, FLOAT, DOUBLE, LONG)
+or the direction of sort, which can be: ascending or descending (reverse).
 
-For example to sort by a `long` field in reverse order use:
+For example to sort by a `long` field, with `SortedNumericSortField` in reverse order use:
 ```
-java -jar target/leila.jar target/demo-index -s long:LONG:DESC -l 2
+java -jar target/leila.jar target/demo-index -s long:sortednumeric:LONG:DESC -l 2
 :: query: *:*
-:: sortBy: <long: "long">!
-:: limit: 20
+:: sortBy: <sortednumeric: "long">! selector=MIN type=LONG
+:: limit: 2
 :: listing documents
 :: total documents found: 100
-:: query time: 27ms
-Document<stored<id:99> stored,indexed,tokenized<content:475db422-32ef-434e-a4c1-fd8eeab7ce57> stored<double:4.99> stored<float:0.99> stored<long:199>>
-Document<stored<id:98> stored,indexed,tokenized<content:random 85772b72-47f2-4fc8-bcf9-441812d8b723> stored<double:4.98> stored<float:0.98> stored<long:198>>
+:: query time: 12ms
+Document<stored<id:99> stored,indexed,tokenized,termVector,indexOptions=DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS<id_str:99> stored,indexed,tokenized<content:1141e438-dab3-40f3-9993-495f44013d5f> stored<double:4.99> stored<float:0.99> stored<long:199> stored,indexed,tokenized,termVector,indexOptions=DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS<txt:some text for 99> stored,indexed,tokenized,termVector,indexOptions=DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS<allstored:some stored text for 99>>
+Document<stored<id:98> stored,indexed,tokenized,termVector,indexOptions=DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS<id_str:98> stored,indexed,tokenized<content:random 24ed7bf1-7a5e-48f6-a1b1-a8014f84e344> stored<double:4.98> stored<float:0.98> stored<long:198> stored,indexed,tokenized,termVector,indexOptions=DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS<txt:some text for 98> stored,indexed,tokenized,termVector,indexOptions=DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS<allstored:some stored text for 98>>
 ```
+
+Default sort field is [SortField](https://lucene.apache.org/core/7_2_0/core/org/apache/lucene/search/SortField.html),
+so note that depending on how you indexed your field, this value won't always work and may give some error.
 
 Default sorting type is String, so be ware that without specifying a type, documents will be sorted in lexicographically
  order:

@@ -22,6 +22,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortedNumericSortField;
+import org.apache.lucene.search.SortedSetSortField;
 
 import static java.lang.String.format;
 
@@ -105,6 +107,8 @@ public class DocumentsReaderOptions {
 		return query;
 	}
 
+	// TODO: refactor to make independent from cli
+	// (in this case this parser will become testable)
 	public Sort getSortByField() {
 		final String sortBy = cli.getOptionValue('s', "");
 
@@ -114,23 +118,49 @@ public class DocumentsReaderOptions {
 
 		final String[] tokens = sortBy.split(":");
 
+		String sortFieldType = "sortfield";
 		String fieldname = tokens[0];
 		SortField.Type type = SortField.Type.STRING;
 		boolean reverse = false;
 
 		if(tokens.length > 1) {
+			sortFieldType = maybeSortFieldType(tokens[1], sortFieldType);
 			type = maybeType(tokens[1], type);
 			reverse = maybeReverse(tokens[1]);
 		}
 		if(tokens.length > 2) {
+			type = maybeType(tokens[2], type);
 			reverse = maybeReverse(tokens[2]);
 		}
+		if(tokens.length > 3) {
+			reverse = maybeReverse(tokens[3]);
+		}
 
-		final Sort sort = new Sort(new SortField(fieldname, type, reverse));
+		SortField sortField;
+		if(sortFieldType.equals("sortednumeric")) {
+			sortField = new SortedNumericSortField(fieldname, type, reverse);
+			// TODO: add selector
+		} else if(sortFieldType.equals("sortedset")) {
+			sortField = new SortedSetSortField(fieldname, reverse);
+			// TODO: add selector
+		} else {
+			sortField = new SortField(fieldname, type, reverse);
+		}
+		Sort sort = new Sort(sortField);
 		System.out.println(format(":: sortBy: %s", sort));
 
 		return sort;
 
+	}
+
+	private String maybeSortFieldType(final String token, final String sortFieldType) {
+		if(token.toLowerCase().equals("sortednumeric")) {
+			return "sortednumeric";
+		}
+		if(token.toLowerCase().equals("sortedset")) {
+			return "sortedset";
+		}
+		return sortFieldType;
 	}
 
 	private SortField.Type maybeType(final String token, final SortField.Type type) {

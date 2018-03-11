@@ -27,34 +27,36 @@ public class Main {
 	
 	public static void main(final String[] args) {
 		final CliParser cliParser = new CliParser(args);
-		if(cliParser.isInvalid()) {
+		if (cliParser.isInvalid()) {
 //			cliParser.printHelp();
 			return;
 		}
-		
+
 		IndexSearcher searcher = null;
-		
-		try { 
-			
+
+		try {
+
 			searcher = Util.getSearcher(cliParser.getIndex());
 
-			if(cliParser.hasOverviewOption()) {
+			if (cliParser.hasOverviewOption()) {
 				final OverviewReader overview = new OverviewReader(searcher);
 				overview.read();
 			}
-			
+
 			final TopTermsReader topTerms = new TopTermsReader(searcher, cliParser.getTopTerrmsOptions());
 			topTerms.read();
-			
+
 			final DocumentsReader documents = new DocumentsReader(searcher, cliParser.getDocumentsReaderOptions(),
 					cliParser.getFieldToDatatype());
 			documents.read();
-			
-			
-		} catch(final IOException ex) {
+
+
+		} catch (final IOException ex) {
 			System.out.println(String.format("problems reading index: %s [%s]", cliParser.getIndex(), ex.getMessage()));
-		} catch(final org.apache.lucene.queryparser.classic.ParseException ex) {
+		} catch (final org.apache.lucene.queryparser.classic.ParseException ex) {
 			System.out.println("problems parsing lucene query: " + ex.getMessage());
+		} catch (IllegalStateException ex) {
+			System.out.println(ex.getMessage());
 		} catch (final Exception e) {
 			// TODO: topTerms launches this exception
 			e.printStackTrace();
