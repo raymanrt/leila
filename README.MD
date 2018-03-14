@@ -13,8 +13,8 @@ the italian name of Luke Skywalker's sister, in the Star Wars mythology.
 Leila is a read-only tool, so use it without any fear of changing your index. Anyway if you have importand data stored
 on the index, please use this software at your own risk.
 
-Leila is based on lucene 4.10.4. Future versions could be available also with more recent dependencies, depending on the
-user needs.
+Leila is based on lucene 7.2.0, which can also read index created by lucen 5 and 6.
+There is another working branch based on lucene 4.10.4.
 
 This software is open-source, released under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0),
 and made without any commercial intent. Please feel free to contribute, especially if you find *leila* usefull and
@@ -45,14 +45,27 @@ The index overview can be activated with the `-o` option.
 
 The index overview has the following format:
 ```
-:: 2 fields:
-content (100 terms)
-id (103 terms)
+:: 10 fields:
+allstored (104 terms)
+content (101 terms)
+double (100 terms)
+float (100 terms)
+id (100 terms)
+id_str (-1 terms)
+long (100 terms)
+longid (-1 terms)
+tag (3 terms)
+txt (103 terms)
 :: number of documents: 100
 :: number of deleted documents: 0
-:: index version: 3
+:: index version: 4
 :: directory implementation: org.apache.lucene.index.StandardDirectoryReader
 :: commit: segments_1 ( generation: 1 segments: 1 )
+:: query: *:*
+:: limit: 20
+:: listing documents
+:: total documents found: 100
+:: query time: 8ms
 
 ```
 
@@ -74,6 +87,7 @@ The parameters of this options should be provided in order and are:
 * an optional number which is the maximum number of terms returned
 
 The terms are always returned sorted by the most frequent. Each row contains the term and its frequency.
+Please note that some field may not have a term vector; in these cases leila will return empty terms list.
 
 
 Search documents
@@ -263,9 +277,7 @@ Next releases
 
 This project is developed in my spare time, there are no scheduled releases. I'll try to fix bugs and resolve opened
 issues. Pull requests and suggestions are wellcome. That said there is a list of feature desired for the next releases:
-* more unit test coverage
 * support for custom query parser
 * support for custom query analyzer
 * aggregate functions (sum, max, min, avg, ...)
 * multi-field sort
-* support for other lucene versions
