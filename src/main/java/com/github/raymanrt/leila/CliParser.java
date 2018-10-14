@@ -18,13 +18,7 @@ package com.github.raymanrt.leila;
 
 import com.github.raymanrt.leila.option.DocumentsReaderOptions;
 import com.github.raymanrt.leila.option.TopTermsOptions;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +46,9 @@ public class CliParser {
 			.addOption(TopTermsOptions.topTermOption())
 
 			.addOption(datatypesOption())
+
+			.addOption(writerOption())
+			.addOption(mergeOption())
 	;
 	final static HelpFormatter formatter = new HelpFormatter();
 	
@@ -132,4 +129,26 @@ public class CliParser {
 		}
 		return fieldsToDatatypes;
     }
+
+	public static Option writerOption() {
+		return Option.builder("w")
+				.desc("enable write mode (required for some functions)")
+				.longOpt("write")
+				.build();
+	}
+
+	public boolean hasWriteMode() {
+		return cli.hasOption('w');
+	}
+
+	public static Option mergeOption() {
+		return Option.builder("m")
+				.desc("force merge index to one segment (requires write mode)")
+				.longOpt("merge")
+				.build();
+	}
+
+	public boolean hasMerge() {
+		return cli.hasOption('m');
+	}
 }

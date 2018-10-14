@@ -16,16 +16,16 @@
 
 package com.github.raymanrt.leila;
 
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.Fields;
-import org.apache.lucene.index.Terms;
-import org.apache.lucene.index.TermsEnum;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Version;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.LongAdder;
@@ -92,5 +92,10 @@ public class Util {
 	
 	public static Set<String> getFieldsFromIndex(final IndexSearcher searcher, final String[] fieldsToIgnore) throws IOException {
 		return getFieldsFromIndex(searcher, fieldsToIgnore, false);
+	}
+
+	public static IndexWriter getWriter(String index) throws IOException {
+		final Directory directory = FSDirectory.open(Paths.get(index).toFile());
+		return new IndexWriter(directory, new IndexWriterConfig(Version.LUCENE_4_10_4, new WhitespaceAnalyzer()));
 	}
 }

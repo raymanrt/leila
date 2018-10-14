@@ -227,6 +227,9 @@ implementation.
 
 Version History
 ---------------
+Version 0.6.0
+* added write mode (to support force merge to one segment)
+* fixed minor bugs
 
 Version 0.4.0
 * added numeric sorting and reversed sorting

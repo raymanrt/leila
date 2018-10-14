@@ -19,6 +19,8 @@ package com.github.raymanrt.leila;
 import com.github.raymanrt.leila.reader.DocumentsReader;
 import com.github.raymanrt.leila.reader.OverviewReader;
 import com.github.raymanrt.leila.reader.TopTermsReader;
+import com.github.raymanrt.leila.writer.IndexMerger;
+import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 
 import java.io.IOException;
@@ -31,7 +33,23 @@ public class Main {
 //			cliParser.printHelp();
 			return;
 		}
-		
+
+		if(cliParser.hasWriteMode()) {
+			try(IndexWriter writer = Util.getWriter(cliParser.getIndex())) {
+
+				if(cliParser.hasMerge()) {
+
+					IndexMerger merger = new IndexMerger(writer, cliParser.getIndex());
+					merger.start();
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return;
+		}
+
 		IndexSearcher searcher = null;
 		
 		try { 
