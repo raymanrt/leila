@@ -30,7 +30,7 @@ public class Main {
 	public static void main(final String[] args) {
 		final CliParser cliParser = new CliParser(args);
 		if(cliParser.isInvalid()) {
-//			cliParser.printHelp();
+			cliParser.printHelp();
 			return;
 		}
 

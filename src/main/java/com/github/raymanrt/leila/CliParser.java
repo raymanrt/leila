@@ -20,6 +20,8 @@ import com.github.raymanrt.leila.option.DocumentsReaderOptions;
 import com.github.raymanrt.leila.option.TopTermsOptions;
 import org.apache.commons.cli.*;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +73,7 @@ public class CliParser {
 	}
 
 	public boolean isInvalid() {
-		return index == null || cli == null;
+		return index == null || cli == null || !Files.isDirectory(Paths.get(index));
 	}
 
 	public void printHelp() {
