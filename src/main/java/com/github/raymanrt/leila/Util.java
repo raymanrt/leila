@@ -78,7 +78,14 @@ public class Util {
 
 		Terms terms = MultiFields.getTerms(reader, field.name);
 		if(terms != null) {
-			return terms.size(); // TODO beware that doesn't take deleted documents into account
+
+			long size = 0;
+			TermsEnum termsEnum = terms.iterator();
+			while (termsEnum.next() != null) {
+				size ++;
+			}
+			return size;
+
 		}
 
 		return -1;
@@ -104,4 +111,9 @@ public class Util {
 	public static Set<String> getFieldsFromIndex(final IndexSearcher searcher, final String[] fieldsToIgnore) throws IOException {
 		return getFieldsFromIndex(searcher, fieldsToIgnore, false);
 	}
+
+    public static IndexWriter getWriter(String index) throws IOException {
+		final Directory directory = FSDirectory.open(Paths.get(index));
+		return new IndexWriter(directory, new IndexWriterConfig());
+    }
 }

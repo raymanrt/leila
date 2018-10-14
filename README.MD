@@ -248,6 +248,10 @@ implementation.
 Version History
 ---------------
 
+Version 0.6.0
+* added write mode (to support force merge to one segment)
+* fixed minor bugs
+
 Version 0.5.0
 * many unit test which bring also minor fixes
 * master branch uses lucene 7.2.0 (which can read also 6 and 5 lucene indexes)

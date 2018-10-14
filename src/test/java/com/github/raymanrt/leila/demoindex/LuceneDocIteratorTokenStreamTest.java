@@ -5,6 +5,8 @@ import com.github.raymanrt.leila.Util;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortedNumericSortField;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,7 +24,7 @@ public class LuceneDocIteratorTokenStreamTest extends DemoIndexBuilderAbstractTe
             LuceneDocIterator it = new LuceneDocIterator(
                     searcher,
                     "*:*",
-                    Sort.INDEXORDER,
+                    new Sort(new SortedNumericSortField("longid", SortField.Type.LONG)),
                     1,
                     new String[]{},
                     new String[]{},
@@ -54,7 +56,7 @@ public class LuceneDocIteratorTokenStreamTest extends DemoIndexBuilderAbstractTe
             LuceneDocIterator it = new LuceneDocIterator(
                     searcher,
                     "*:*",
-                    Sort.INDEXORDER,
+                    new Sort(new SortedNumericSortField("longid", SortField.Type.LONG)),
                     1,
                     new String[]{},
                     new String[]{},
@@ -86,7 +88,7 @@ public class LuceneDocIteratorTokenStreamTest extends DemoIndexBuilderAbstractTe
             LuceneDocIterator it = new LuceneDocIterator(
                     searcher,
                     "*:*",
-                    Sort.INDEXORDER,
+                    new Sort(new SortedNumericSortField("longid", SortField.Type.LONG)),
                     1,
                     new String[]{},
                     new String[]{},

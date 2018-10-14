@@ -46,6 +46,9 @@ public class CliParser {
 			.addOption(TopTermsOptions.topTermOption())
 
 			.addOption(datatypesOption())
+
+			.addOption(writerOption())
+			.addOption(mergeOption())
 	;
 	final static HelpFormatter formatter = new HelpFormatter();
 	
@@ -108,6 +111,28 @@ public class CliParser {
 				.hasArgs()
 				.valueSeparator(',')
 				.build();
+	}
+
+	public static Option writerOption() {
+		return Option.builder("w")
+				.desc("enable write mode (required for some functions)")
+				.longOpt("write")
+				.build();
+	}
+
+	public boolean hasWriteMode() {
+		return cli.hasOption('w');
+	}
+
+	public static Option mergeOption() {
+		return Option.builder("m")
+				.desc("force merge index to one segment (requires write mode)")
+				.longOpt("merge")
+				.build();
+	}
+
+	public boolean hasMerge() {
+		return cli.hasOption('m');
 	}
 
     public Map<String, String> getFieldToDatatype() {

@@ -83,6 +83,10 @@ public abstract class DemoIndexBuilderAbstractTest {
         try(IndexWriter iw = new IndexWriter(dir, conf)) {
             for(int i = 0; i < MAX_DOCS; i++) {
                 iw.addDocument(mockDocument(i));
+
+                if(i % 10 == 0) {
+                    iw.commit();
+                }
             }
             iw.commit();
             Assert.assertEquals(MAX_DOCS, iw.numDocs());
