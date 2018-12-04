@@ -20,18 +20,22 @@ import com.github.raymanrt.leila.option.DocumentsReaderOptions;
 import com.github.raymanrt.leila.option.TopTermsOptions;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static java.lang.String.format;
 
 public class CliParser {
+	private static final String PACKAGE_PROPERTIES = "META-INF/maven/com.github.raymanrt/leila/pom.properties";
+
 	final static CommandLineParser CLI_PARSER = new DefaultParser();
 	final static Options options = new Options()
 			// TODO: verbose
-			
+
 			// query
 			.addOption(overviewOption())
 			.addOption(DocumentsReaderOptions.fieldsOption())
@@ -41,9 +45,9 @@ public class CliParser {
 			.addOption(DocumentsReaderOptions.sortByOption())
 			.addOption(DocumentsReaderOptions.limitOption())
 			.addOption(DocumentsReaderOptions.pluginOption())
-			
+
 			// TODO: list fields -f (with freq?)
-			
+
 			// TODO: list (top) terms -t (by field, how many)
 			.addOption(TopTermsOptions.topTermOption())
 
@@ -51,24 +55,24 @@ public class CliParser {
 
 			.addOption(writerOption())
 			.addOption(mergeOption())
-	;
+			;
 	final static HelpFormatter formatter = new HelpFormatter();
-	
+
 	private String index = null;
 	private CommandLine cli = null;
 	private TopTermsOptions topTermsOptions;
 	private DocumentsReaderOptions documentsReaderOptions;
-	
+
 
 	public CliParser(final String[] args) {
 		try {
 			this.index = args[0];
 			this.cli = CLI_PARSER.parse(options, args);
-			
+
 			this.topTermsOptions = new TopTermsOptions(cli);
 			this.documentsReaderOptions = new DocumentsReaderOptions(cli);
 		} catch(final ArrayIndexOutOfBoundsException|ParseException ex) {
-			formatter.printHelp("leila [lucene index] [options]", options);
+//			formatter.printHelp("leila [lucene index] [options]", options);
 		}
 	}
 
@@ -77,7 +81,17 @@ public class CliParser {
 	}
 
 	public void printHelp() {
-		formatter.printHelp("leila [lucene index] [options]", options);
+
+		final Properties properties = new Properties();
+		try {
+			properties.load(CliParser.class.getClassLoader().getResourceAsStream(PACKAGE_PROPERTIES));
+		} catch (IOException|NullPointerException e) {
+		}
+
+		String version = properties.getProperty("version", "{unknown version}");
+
+		System.out.println(":: using leila " + version);
+		formatter.printHelp("leila [lucene index] [options]", options, false);
 	}
 
 	public String getIndex() {
@@ -115,6 +129,23 @@ public class CliParser {
 				.build();
 	}
 
+	public Map<String, String> getFieldToDatatype() {
+		final Map<String, String> fieldsToDatatypes = new HashMap<>();
+		if(cli.hasOption('d')) {
+			String[] fieldAndDatatypes = cli.getOptionValues('d');
+
+			for(String fieldAndDatatype : fieldAndDatatypes) {
+				String[] tokens = fieldAndDatatype.trim().split(":");
+				String field = tokens[0].trim();
+				String datatype = tokens[1].trim();
+				fieldsToDatatypes.put(field, datatype);
+			}
+
+			System.out.println(format(":: datatype infos: %s", fieldsToDatatypes));
+		}
+		return fieldsToDatatypes;
+	}
+
 	public static Option writerOption() {
 		return Option.builder("w")
 				.desc("enable write mode (required for some functions)")
@@ -136,21 +167,4 @@ public class CliParser {
 	public boolean hasMerge() {
 		return cli.hasOption('m');
 	}
-
-    public Map<String, String> getFieldToDatatype() {
-		final Map<String, String> fieldsToDatatypes = new HashMap<>();
-		if(cli.hasOption('d')) {
-			String[] fieldAndDatatypes = cli.getOptionValues('d');
-
-			for(String fieldAndDatatype : fieldAndDatatypes) {
-				String[] tokens = fieldAndDatatype.trim().split(":");
-				String field = tokens[0].trim();
-				String datatype = tokens[1].trim();
-				fieldsToDatatypes.put(field, datatype);
-			}
-
-			System.out.println(format(":: datatype infos: %s", fieldsToDatatypes));
-		}
-		return fieldsToDatatypes;
-    }
 }
