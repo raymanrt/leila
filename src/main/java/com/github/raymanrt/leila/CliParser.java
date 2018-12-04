@@ -20,14 +20,18 @@ import com.github.raymanrt.leila.option.DocumentsReaderOptions;
 import com.github.raymanrt.leila.option.TopTermsOptions;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static java.lang.String.format;
 
 public class CliParser {
+    private static final String PACKAGE_PROPERTIES = "META-INF/maven/com.github.raymanrt/leila/pom.properties";
+
 	final static CommandLineParser CLI_PARSER = new DefaultParser();
 	final static Options options = new Options()
 			// TODO: verbose
@@ -53,8 +57,8 @@ public class CliParser {
 			.addOption(mergeOption())
 	;
 	final static HelpFormatter formatter = new HelpFormatter();
-	
-	private String index = null;
+
+    private String index = null;
 	private CommandLine cli = null;
 	private TopTermsOptions topTermsOptions;
 	private DocumentsReaderOptions documentsReaderOptions;
@@ -68,7 +72,7 @@ public class CliParser {
 			this.topTermsOptions = new TopTermsOptions(cli);
 			this.documentsReaderOptions = new DocumentsReaderOptions(cli);
 		} catch(final ArrayIndexOutOfBoundsException|ParseException ex) {
-			formatter.printHelp("leila [lucene index] [options]", options);
+//			formatter.printHelp("leila [lucene index] [options]", options);
 		}
 	}
 
@@ -77,7 +81,17 @@ public class CliParser {
 	}
 
 	public void printHelp() {
-		formatter.printHelp("leila [lucene index] [options]", options);
+
+        final Properties properties = new Properties();
+        try {
+            properties.load(CliParser.class.getClassLoader().getResourceAsStream(PACKAGE_PROPERTIES));
+        } catch (IOException|NullPointerException e) {
+        }
+
+        String version = properties.getProperty("version", "{unknown version}");
+
+        System.out.println(":: using leila " + version);
+		formatter.printHelp("leila [lucene index] [options]", options, false);
 	}
 
 	public String getIndex() {
