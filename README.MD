@@ -245,8 +245,28 @@ java -cp 'target/leila.jar:../leila-json/target/leila-json.jar' com.github.rayma
 Please go to [leila-json](https://github.com/raymanrt/leila-json) for more documentation and for a reference
 implementation.
 
+Write Mode
+----------
+
+With leila you can also
+[force to one the number of segments](https://lucene.apache.org/core/7_4_0/core/org/apache/lucene/index/IndexWriter.html#forceMerge-int-)
+of an index (m option).
+This is *potentially* a dangerous mode, so you should confirm you are using it with an extra command line option (w),
+to esplicitly enable write mode.
+
+```
+java -jar target/leila.jar target/demo-index/ -w -m
+starting force merge to 1 segment: 26417 bytes
+merged to 1 segment: 26417 bytes
+```
+
+
 Version History
 ---------------
+
+Version 0.6.1
+* fixed help
+* added version number to help
 
 Version 0.6.0
 * added write mode (to support force merge to one segment)
