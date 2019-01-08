@@ -64,7 +64,11 @@ public class DocumentsReader {
 			System.out.println(format(":: query time: %dms", docs.getQueryTimeInMs()));
 
 			while(docs.hasNext()) {
-				System.out.println(formatter.format(docs.next()));
+				String nextFormattedDocument = formatter.format(docs.next());
+				if(!nextFormattedDocument.isEmpty()) {
+					System.out.println(formatter.format(docs.next()));
+				}
+
 				for(final String tokenStreamField : tokenStreamFields) {
 					final List<Object> tokenStream = docs.getTokenStream(tokenStreamField);
 					if(!tokenStream.isEmpty()) {
