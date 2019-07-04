@@ -264,6 +264,10 @@ merged to 1 segment: 26417 bytes
 Version History
 ---------------
 
+Version 0.6.3
+* update lucene to 7.7.2
+* fixed ArrayIndexOutOfBoundsException in document iteration
+
 Version 0.6.2
 * update apache commons to 3.7
 * bugfix for empty documents

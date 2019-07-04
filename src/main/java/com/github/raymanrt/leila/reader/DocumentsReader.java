@@ -66,7 +66,7 @@ public class DocumentsReader {
 			while(docs.hasNext()) {
 				String nextFormattedDocument = formatter.format(docs.next());
 				if(!nextFormattedDocument.isEmpty()) {
-					System.out.println(formatter.format(docs.next()));
+					System.out.println(nextFormattedDocument);
 				}
 
 				for(final String tokenStreamField : tokenStreamFields) {

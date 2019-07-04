@@ -97,7 +97,7 @@ public class Util {
 	}
 
 	private static boolean isPoint(FieldInfo field) {
-		return field.getPointDimensionCount() > 0 && field.getPointNumBytes() > 0;
+		return field.getPointDataDimensionCount() > 0 && field.getPointNumBytes() > 0;
 	}
 
 	public static Set<String> getFieldsFromIndex(final IndexSearcher searcher, final boolean withCount) throws IOException {
