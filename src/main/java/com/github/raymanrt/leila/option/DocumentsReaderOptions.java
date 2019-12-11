@@ -86,7 +86,7 @@ public class DocumentsReaderOptions {
 
 	public static Option sortByOption() {
 		return Option.builder("s")
-				.desc("field for sorting (default INDEX ORDER)")
+				.desc("field for sorting (default INDEX ORDER, sortedNumericFieldName:sortednumeric:LONG:desc, fieldname, sort type (sortednumeric or sortedset), data type, reverse flag)")
 				.longOpt("sortBy")
 				.hasArg()
 		.build();
